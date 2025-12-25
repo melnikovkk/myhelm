@@ -160,7 +160,9 @@ const Hero = () => {
                   disabled={!isLaunchEnabled || state === 'LAUNCHING'}
                   size="lg"
                   className={`w-full gap-3 text-lg font-semibold transition-all duration-300 rounded-xl ${
-                    isLaunchEnabled && state !== 'LAUNCHING' ? 'bg-primary text-primary-foreground btn-glow animate-pulse-glow' : 'bg-muted text-muted-foreground'
+                    isLaunchEnabled && state !== 'LAUNCHING' 
+                      ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25' 
+                      : 'bg-muted text-muted-foreground'
                   }`}
                 >
                   {state === 'LAUNCHING' ? (

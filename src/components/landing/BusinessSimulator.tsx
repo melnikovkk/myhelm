@@ -2,7 +2,9 @@ import { useState, useCallback, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Play, RotateCcw } from 'lucide-react';
+import { Play, RotateCcw, Loader2 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
 import BusinessTab from './BusinessTab';
 import RealityTab from './RealityTab';
 import CoverageTab from './CoverageTab';
@@ -22,10 +24,12 @@ export type SimulatorState =
 
 export interface BusinessData {
   name: string;
-  packages: { name: string; price: string }[];
+  tagline?: string;
+  packages: { name: string; price: string; description?: string }[];
   target: string;
   channel: string;
-  week1: string[];
+  week1Goals?: string[];
+  week1?: string[];
   roles: string[];
   loops: {
     sell: string;
@@ -34,6 +38,7 @@ export interface BusinessData {
     support: string;
   };
   policies: string[];
+  kpis?: string[];
 }
 
 interface BusinessSimulatorProps {
@@ -62,59 +67,6 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
   { time: '17:00', key: 'timeline.17:00', progress: 100 },
 ];
 
-// Generate smart business data from prompt (or use canon fallback)
-function generateBusinessData(prompt: string, language: 'en' | 'ru'): BusinessData {
-  // Extract potential business name from prompt
-  const words = prompt.toLowerCase();
-  let businessType = 'cleaning';
-  let city = 'Berlin';
-  
-  if (words.includes('клининг') || words.includes('уборк') || words.includes('cleaning')) {
-    businessType = 'cleaning';
-  } else if (words.includes('консалтинг') || words.includes('consulting')) {
-    businessType = 'consulting';
-  } else if (words.includes('коучинг') || words.includes('coaching')) {
-    businessType = 'coaching';
-  }
-  
-  if (words.includes('берлин') || words.includes('berlin')) {
-    city = 'Berlin';
-  } else if (words.includes('москв') || words.includes('moscow')) {
-    city = language === 'ru' ? 'Москва' : 'Moscow';
-  }
-
-  const isRu = language === 'ru';
-  
-  // Canon demo data
-  return {
-    name: isRu ? `CleanPro ${city}` : `CleanPro ${city}`,
-    packages: [
-      { name: isRu ? 'Базовый' : 'Basic', price: '€49' },
-      { name: isRu ? 'Глубокий' : 'Deep', price: '€89' },
-      { name: isRu ? 'Офис' : 'Office', price: '€149' },
-    ],
-    target: isRu 
-      ? 'Занятые профессионалы, семьи, малый бизнес' 
-      : 'Busy professionals, families, small businesses',
-    channel: 'WhatsApp',
-    week1: isRu 
-      ? ['Запустить WhatsApp Business', 'Первые 5 клиентов', 'Нанять 2 уборщиков']
-      : ['Launch WhatsApp Business', 'First 5 customers', 'Hire 2 cleaners'],
-    roles: isRu 
-      ? ['CEO (ты)', 'Уборщики', 'Поддержка (HELM)']
-      : ['CEO (you)', 'Cleaners', 'Support (HELM)'],
-    loops: {
-      sell: isRu ? 'Лид → Бронь → Подтверждение' : 'Lead → Booking → Confirmation',
-      deliver: isRu ? 'Назначение → Выполнение → Проверка' : 'Assignment → Completion → Verification',
-      money: isRu ? 'Счёт → Оплата → Сверка' : 'Invoice → Payment → Reconciliation',
-      support: isRu ? 'Запрос → Решение CEO → Запись' : 'Request → CEO Decision → Record',
-    },
-    policies: isRu 
-      ? ['Возврат = решение CEO', 'Скидка <10% = авто', 'Перенос = бесплатно']
-      : ['Refund = CEO decision', 'Discount <10% = auto', 'Reschedule = free'],
-  };
-}
-
 const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSimulatorProps) => {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('business');
@@ -124,13 +76,53 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
   const [decisionMade, setDecisionMade] = useState<'approve' | 'deny' | 'photo' | null>(null);
   const [evidenceRevealed, setEvidenceRevealed] = useState<number[]>([]);
   const [businessData, setBusinessData] = useState<BusinessData | null>(null);
+  const [isGenerating, setIsGenerating] = useState(false);
 
-  // Generate business data when entering ARTIFACTS state
+  // Generate business data from LLM when entering LAUNCHING state
   useEffect(() => {
-    if (state === 'ARTIFACTS' && !businessData) {
-      setBusinessData(generateBusinessData(prompt, language));
+    if (state === 'LAUNCHING' && !businessData && !isGenerating) {
+      generateArtifacts();
     }
-  }, [state, prompt, language, businessData]);
+  }, [state]);
+
+  const generateArtifacts = async () => {
+    setIsGenerating(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('generate-artifacts', {
+        body: { prompt, locale: language },
+      });
+
+      if (error) throw error;
+
+      if (data?.success && data?.artifacts) {
+        // Normalize the data structure
+        const artifacts = data.artifacts;
+        setBusinessData({
+          name: artifacts.name || 'New Business',
+          tagline: artifacts.tagline,
+          packages: artifacts.packages || [],
+          target: artifacts.target || '',
+          channel: artifacts.channel || 'WhatsApp',
+          week1Goals: artifacts.week1Goals,
+          week1: artifacts.week1Goals || artifacts.week1,
+          roles: artifacts.roles || [],
+          loops: artifacts.loops || { sell: '', deliver: '', money: '', support: '' },
+          policies: artifacts.policies || [],
+          kpis: artifacts.kpis,
+        });
+        setState('ARTIFACTS');
+      } else {
+        throw new Error(data?.error || 'Failed to generate artifacts');
+      }
+    } catch (err) {
+      console.error('Artifact generation error:', err);
+      toast.error(language === 'ru' ? 'Ошибка генерации. Попробуйте снова.' : 'Generation failed. Please try again.');
+      setState('TYPED');
+    } finally {
+      setIsGenerating(false);
+    }
+  };
 
   // Timeline animation
   useEffect(() => {
@@ -216,31 +208,54 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
     setCurrentEventIndex(Math.max(0, eventIndex));
   }, [state]);
 
+  // Show loading state while generating
+  if (state === 'LAUNCHING' || isGenerating) {
+    return (
+      <div className="mt-8 animate-fade-in">
+        <div className="glass-card p-8 flex flex-col items-center justify-center min-h-[300px]">
+          <div className="relative">
+            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
+              <Loader2 className="w-10 h-10 text-primary animate-spin" />
+            </div>
+            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+          </div>
+          <h3 className="mt-6 text-lg font-semibold text-foreground">
+            {language === 'ru' ? 'Создаём ваш бизнес...' : 'Building your business...'}
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground max-w-md text-center">
+            {language === 'ru' 
+              ? 'AI анализирует промпт и генерирует план, структуру и операционную систему'
+              : 'AI is analyzing your prompt and generating the plan, structure, and operating system'}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
   if (!businessData) return null;
 
   const canRunTestDay = state === 'ARTIFACTS' || state === 'REPLAY';
-  const showTimeline = ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
 
   return (
     <div className="mt-8 animate-fade-in-up">
       {/* Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-3 bg-secondary/50 mb-6">
+        <TabsList className="w-full grid grid-cols-3 bg-secondary/50 rounded-xl p-1 mb-6">
           <TabsTrigger 
             value="business" 
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
           >
             {t('tab.business')}
           </TabsTrigger>
           <TabsTrigger 
             value="reality"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
           >
             {t('tab.reality')}
           </TabsTrigger>
           <TabsTrigger 
             value="coverage"
-            className="data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
+            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
           >
             {t('tab.coverage')}
           </TabsTrigger>
@@ -273,7 +288,7 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
           {canRunTestDay && (
             <Button
               onClick={handleRunTestDay}
-              className="gap-2 bg-primary text-primary-foreground btn-glow"
+              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6"
             >
               <Play className="w-4 h-4" />
               {state === 'REPLAY' ? (language === 'ru' ? 'Запустить снова' : 'Run again') : t('timeline.run')}
@@ -284,7 +299,7 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
             <Button
               variant="outline"
               onClick={onEditPrompt}
-              className="gap-2"
+              className="gap-2 rounded-xl"
             >
               <RotateCcw className="w-4 h-4" />
               {t('replay.edit')}
