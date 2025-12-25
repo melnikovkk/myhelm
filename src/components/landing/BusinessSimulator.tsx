@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect, useRef, forwardRef } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -80,8 +80,7 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
   { time: '17:00', key: 'timeline.17:00', progress: 100 },
 ];
 
-const BusinessSimulator = forwardRef<HTMLDivElement, BusinessSimulatorProps>(
-  ({ state, setState, prompt, onEditPrompt }, ref) => {
+const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSimulatorProps) => {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('business');
   const [timelineProgress, setTimelineProgress] = useState(0);
@@ -360,8 +359,6 @@ const BusinessSimulator = forwardRef<HTMLDivElement, BusinessSimulatorProps>(
       />
     </div>
   );
-});
-
-BusinessSimulator.displayName = 'BusinessSimulator';
+};
 
 export default BusinessSimulator;
