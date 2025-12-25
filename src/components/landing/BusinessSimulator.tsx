@@ -2,13 +2,15 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Play, RotateCcw, Loader2 } from 'lucide-react';
+import { Play, RotateCcw, Loader2, Globe } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import BusinessTab from './BusinessTab';
 import RealityTab from './RealityTab';
 import CoverageTab from './CoverageTab';
+import RegionTab from './RegionTab';
 import BossDecisionModal from './BossDecisionModal';
+import { RegionConfig, IndustryConfig } from '@/lib/regionData';
 
 /*
  * DEMO HAPPY PATH CHECKLIST (verified after fixes):
@@ -59,6 +61,8 @@ interface BusinessSimulatorProps {
   setState: (state: SimulatorState) => void;
   prompt: string;
   onEditPrompt: () => void;
+  region?: RegionConfig | null;
+  industry?: IndustryConfig | null;
 }
 
 // Timeline events with times
@@ -80,7 +84,7 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
   { time: '17:00', key: 'timeline.17:00', progress: 100 },
 ];
 
-const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSimulatorProps) => {
+const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, industry }: BusinessSimulatorProps) => {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('business');
   const [timelineProgress, setTimelineProgress] = useState(0);

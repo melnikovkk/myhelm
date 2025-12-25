@@ -17,6 +17,7 @@ import {
   ArrowRight
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
+import { RegionConfig, IndustryConfig } from '@/lib/regionData';
 
 type Mode = 'zero' | 'digitize' | null;
 type BusinessType = 'service' | 'ecommerce' | 'creator' | 'other' | null;
@@ -30,6 +31,8 @@ interface MarketSnapshot {
 interface PromptGeneratorProps {
   onPromptGenerated: (prompt: string, marketData?: MarketSnapshot) => void;
   onUseCanon: () => void;
+  region?: RegionConfig | null;
+  industry?: IndustryConfig | null;
 }
 
 const BUSINESS_TYPES = [
@@ -39,7 +42,7 @@ const BUSINESS_TYPES = [
   { key: 'other', icon: HelpCircle, labelEn: 'Other', labelRu: 'Другое', color: 'text-muted-foreground' },
 ] as const;
 
-const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps) => {
+const PromptGenerator = ({ onPromptGenerated, onUseCanon, region, industry }: PromptGeneratorProps) => {
   const { language } = useLanguage();
   const [step, setStep] = useState<Step>('mode');
   const [mode, setMode] = useState<Mode>(null);
@@ -93,12 +96,24 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
     setError(null);
 
     try {
+      // Use region/industry from props if available
+      const regionCode = region?.code || 'US';
+      const regionName = region ? (language === 'ru' ? region.nameRu : region.nameEn) : '';
+      const currency = region?.currency || 'USD';
+      const industryKey = industry?.key || type || 'service';
+      const industryName = industry ? (language === 'ru' ? industry.labelRu : industry.labelEn) : '';
+
       const { data, error: fnError } = await supabase.functions.invoke('generate-demo-prompt', {
         body: {
           mode,
-          businessType: type,
-          location: loc,
+          businessType: type || industryKey,
+          location: loc || regionName,
           locale: language,
+          // Enhanced context from selectors
+          regionCode,
+          currency,
+          industryKey,
+          industryName,
           // Digitize-specific context
           existingBusinessName: mode === 'digitize' ? existingBusinessName : undefined,
           painPoints: mode === 'digitize' ? painPoints : undefined,
