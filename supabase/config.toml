@@ -5,3 +5,6 @@ verify_jwt = false
 
 [functions.competitor-scan]
 verify_jwt = false
+
+[functions.ceo-voice-briefing]
+verify_jwt = false

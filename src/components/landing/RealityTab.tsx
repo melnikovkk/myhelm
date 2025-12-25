@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -11,7 +11,9 @@ import {
   ExternalLink, 
   Volume2, 
   AlertCircle,
-  CheckCircle
+  CheckCircle,
+  Play,
+  Pause
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -49,6 +51,10 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
   const [competitorError, setCompetitorError] = useState<string | null>(null);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState<string | null>(null);
+  const [voiceAudioUrl, setVoiceAudioUrl] = useState<string | null>(null);
+  const [isGeneratingVoice, setIsGeneratingVoice] = useState(false);
+  const [isPlayingVoice, setIsPlayingVoice] = useState(false);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
   
   const remaining = getRealityRemaining();
   const canFetch = canUseReality();
@@ -102,14 +108,9 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
         incrementRealityUsage();
         setCachedReality(cacheKey, language, 'market', data.data);
         
-        // Generate voice transcript if enabled
-        if (voiceEnabled) {
-          const summary = data.data.bullets.slice(0, 2).join('. ');
-          setVoiceTranscript(
-            language === 'ru'
-              ? `Краткий брифинг: ${summary}`
-              : `Quick briefing: ${summary}`
-          );
+        // Generate voice briefing if enabled
+        if (voiceEnabled && data.data.bullets.length > 0) {
+          await generateVoiceBriefing(data.data.bullets);
         }
       } else {
         throw new Error(data.error || 'Failed to fetch market data');
@@ -123,6 +124,62 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
       );
     } finally {
       setIsFetchingMarket(false);
+    }
+  };
+
+  const generateVoiceBriefing = async (bullets: string[]) => {
+    setIsGeneratingVoice(true);
+    
+    try {
+      // Create summary for voice briefing
+      const summary = bullets.slice(0, 3).join('. ');
+      const briefingText = language === 'ru'
+        ? `Краткий брифинг по вашему рынку. ${summary}. Рекомендую начать с анализа конкурентов и определения своего уникального предложения.`
+        : `Quick market briefing. ${summary}. I recommend starting with competitor analysis and defining your unique value proposition.`;
+      
+      setVoiceTranscript(briefingText);
+      
+      const { data, error } = await supabase.functions.invoke('ceo-voice-briefing', {
+        body: { text: briefingText, locale: language },
+      });
+      
+      if (error) throw error;
+      
+      if (data.audioContent) {
+        // Create audio URL from base64
+        const audioUrl = `data:audio/mpeg;base64,${data.audioContent}`;
+        setVoiceAudioUrl(audioUrl);
+        
+        // Create audio element
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
+        const audio = new Audio(audioUrl);
+        audioRef.current = audio;
+        
+        audio.onended = () => setIsPlayingVoice(false);
+        audio.onerror = () => {
+          console.error('Audio playback error');
+          setIsPlayingVoice(false);
+        };
+      }
+    } catch (error) {
+      console.error('Voice briefing error:', error);
+      // Don't show error to user, just keep transcript visible
+    } finally {
+      setIsGeneratingVoice(false);
+    }
+  };
+
+  const toggleVoicePlayback = () => {
+    if (!audioRef.current) return;
+    
+    if (isPlayingVoice) {
+      audioRef.current.pause();
+      setIsPlayingVoice(false);
+    } else {
+      audioRef.current.play();
+      setIsPlayingVoice(true);
     }
   };
 
@@ -265,20 +322,49 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
         </div>
       )}
 
-      {/* Voice Briefing Transcript */}
-      {voiceTranscript && (
+      {/* Voice Briefing */}
+      {(voiceTranscript || isGeneratingVoice) && (
         <div className="glass-card p-5 animate-fade-in border-primary/30">
-          <h4 className="font-semibold text-foreground mb-3 flex items-center gap-2">
-            <Volume2 className="w-4 h-4 text-primary" />
-            {t('reality.voice.title')}
-          </h4>
-          <p className="text-sm text-muted-foreground italic">
-            "{voiceTranscript}"
-          </p>
-          <p className="text-xs text-muted-foreground mt-3 flex items-center gap-1">
-            <AlertCircle className="w-3 h-3" />
-            {language === 'ru' ? 'Аудио будет доступно при подключении ElevenLabs' : 'Audio available when ElevenLabs is connected'}
-          </p>
+          <div className="flex items-center justify-between mb-3">
+            <h4 className="font-semibold text-foreground flex items-center gap-2">
+              <Volume2 className="w-4 h-4 text-primary" />
+              {t('reality.voice.title')}
+            </h4>
+            
+            {voiceAudioUrl && (
+              <Button
+                onClick={toggleVoicePlayback}
+                variant="outline"
+                size="sm"
+                className="gap-2"
+              >
+                {isPlayingVoice ? (
+                  <>
+                    <Pause className="w-4 h-4" />
+                    {language === 'ru' ? 'Пауза' : 'Pause'}
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4" />
+                    {language === 'ru' ? 'Слушать' : 'Play'}
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
+          
+          {isGeneratingVoice ? (
+            <div className="flex items-center gap-2 text-muted-foreground">
+              <Loader2 className="w-4 h-4 animate-spin" />
+              <span className="text-sm">
+                {language === 'ru' ? 'Генерация голосового брифинга...' : 'Generating voice briefing...'}
+              </span>
+            </div>
+          ) : (
+            <p className="text-sm text-muted-foreground italic">
+              "{voiceTranscript}"
+            </p>
+          )}
         </div>
       )}
 
