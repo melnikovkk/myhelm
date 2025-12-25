@@ -1,8 +1,9 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { FileText, Settings, Rocket } from 'lucide-react';
+import mobileDashboard from '@/assets/mobile-dashboard.png';
 
 const WhatBecomesReal = () => {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
 
   const artifacts = [
     {
@@ -27,11 +28,31 @@ const WhatBecomesReal = () => {
       <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent pointer-events-none" />
       
       <div className="container mx-auto px-4 relative z-10">
-        <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
-          {t('real.title')}
-        </h2>
-        <div className="w-20 h-1 bg-primary mx-auto mb-12 rounded-full" />
-
+        <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto mb-16">
+          {/* Left: Image */}
+          <div className="relative">
+            <img 
+              src={mobileDashboard} 
+              alt="HELM Mobile Dashboard" 
+              className="w-full max-w-md mx-auto drop-shadow-2xl"
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent pointer-events-none" />
+          </div>
+          
+          {/* Right: Content */}
+          <div>
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+              {t('real.title')}
+            </h2>
+            <div className="w-20 h-1 bg-primary mb-6 rounded-full" />
+            <p className="text-muted-foreground mb-8">
+              {language === 'ru' 
+                ? 'Из промпта — в работающий бизнес. Не шаблон. Не документ. Реальная система, которая работает.'
+                : 'From prompt to running business. Not a template. Not a document. A real system that works.'}
+            </p>
+          </div>
+        </div>
+        
         <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
           {artifacts.map(({ icon: Icon, titleKey, descKey }, i) => (
             <div 

@@ -13,6 +13,7 @@ import {
   Brain,
   FileCheck
 } from 'lucide-react';
+import coverageDiagram from '@/assets/coverage-diagram.png';
 
 // 8 Business Domains
 const DOMAINS = [
@@ -120,8 +121,15 @@ const CoverageTab = () => {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
+      {/* Header with diagram */}
       <div className="text-center mb-8">
+        <div className="relative w-full max-w-md mx-auto mb-6">
+          <img 
+            src={coverageDiagram} 
+            alt="8-Domain Business Coverage" 
+            className="w-full h-auto opacity-80 hover:opacity-100 transition-opacity"
+          />
+        </div>
         <h3 className="text-xl font-semibold text-foreground mb-2">
           {t('coverage.title')}
         </h3>

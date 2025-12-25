@@ -5,6 +5,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Rocket, Sparkles, Pencil, CheckCircle2 } from 'lucide-react';
 import BusinessSimulator, { SimulatorState } from './BusinessSimulator';
 import PromptGenerator from './PromptGenerator';
+import heroBg from '@/assets/hero-bg.jpg';
 
 interface MarketSnapshot {
   bullets: string[];
@@ -74,6 +75,13 @@ const Hero = () => {
 
   return (
     <section className="relative pt-32 pb-20 md:pt-40 md:pb-32 overflow-hidden">
+      {/* Hero background image */}
+      <div 
+        className="absolute inset-0 opacity-20 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: `url(${heroBg})` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-b from-background via-background/90 to-background" />
+      
       {/* Background effects */}
       <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[120px] pointer-events-none" />
       <div className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-accent/5 rounded-full blur-[100px] pointer-events-none" />

@@ -306,14 +306,14 @@ export const translations = {
     ru: 'Генерируем брифинг...',
   },
 
-  // Coverage Map
+  // Coverage Map - CORRECTED POSITIONING
   'coverage.title': {
-    en: 'Full Business Coverage',
-    ru: 'Полное покрытие бизнеса',
+    en: '8-Domain Business Coverage',
+    ru: 'Покрытие бизнеса из 8 доменов',
   },
   'coverage.subtitle': {
-    en: 'HELM runs your entire business, not just one piece.',
-    ru: 'HELM ведёт весь бизнес, а не только одну часть.',
+    en: 'HELM builds your Business Program across every domain. CEO decisions only when risk is high — always with proof.',
+    ru: 'HELM строит твою Бизнес-Программу по всем доменам. Решения CEO только при высоких рисках — всегда с доказательствами.',
   },
   'coverage.runs': {
     en: 'Runs',
@@ -427,7 +427,7 @@ export const translations = {
     ru: 'Демо-режим: Подключи бэкенд для сбора заявок',
   },
 
-  // FAQ
+  // FAQ - CORRECTED POSITIONING
   'faq.title': {
     en: 'Questions',
     ru: 'Вопросы',
@@ -437,38 +437,46 @@ export const translations = {
     ru: 'Что можно построить с HELM?',
   },
   'faq.a1': {
-    en: 'Any service business: cleaning, consulting, coaching, agencies, local services. If it involves selling, delivering, and getting paid — HELM runs it.',
-    ru: 'Любой сервисный бизнес: клининг, консалтинг, коучинг, агентства, локальные услуги. Если есть продажа, доставка и оплата — HELM справится.',
+    en: 'HELM builds and runs a complete Business Program for any online, offline, or hybrid business. Start from zero with just an idea, or digitize an existing business you already run. HELM handles 8 core domains: Sell, Deliver, Money, Support, People, Legal/Policies, Reporting, and Assets — with CEO-only decisions for high-risk moments, always recorded with proof.',
+    ru: 'HELM создаёт и ведёт полную Бизнес-Программу для любого онлайн, офлайн или гибридного бизнеса. Начни с нуля с одной идеи или оцифруй существующий бизнес. HELM покрывает 8 ключевых доменов: Продажи, Доставка, Деньги, Поддержка, Люди, Право/Политики, Отчётность и Активы — с решениями CEO только для важных моментов, всегда с доказательствами.',
   },
   'faq.q2': {
     en: 'Do I need technical skills?',
     ru: 'Нужны ли технические навыки?',
   },
   'faq.a2': {
-    en: 'No. You describe what you want in plain words. HELM builds and runs it.',
-    ru: 'Нет. Ты описываешь, что хочешь, обычными словами. HELM строит и запускает.',
+    en: 'No. Describe what you want in plain words. HELM generates your Business Program — the operating system that defines how your business works. You make CEO decisions only when risk is high.',
+    ru: 'Нет. Опиши, что хочешь, обычными словами. HELM сгенерирует твою Бизнес-Программу — операционную систему, которая определяет, как работает бизнес. Ты принимаешь решения CEO только при высоких рисках.',
   },
   'faq.q3': {
-    en: 'How is this different?',
-    ru: 'Чем это отличается?',
+    en: 'How is this different from other tools?',
+    ru: 'Чем это отличается от других инструментов?',
   },
   'faq.a3': {
-    en: 'Other tools help you organize tasks. HELM runs your business end-to-end: from lead to payment, with proof of every decision.',
-    ru: 'Другие инструменты помогают организовать задачи. HELM ведёт бизнес от и до: от лида до оплаты, с доказательством каждого решения.',
+    en: 'Other tools help you organize tasks or automate parts. HELM is a business builder: it creates your entire operating system from a prompt, executes it end-to-end, and gives you proof of every action and decision. You stay CEO — the system handles execution.',
+    ru: 'Другие инструменты помогают организовать задачи или автоматизировать части. HELM — это конструктор бизнеса: создаёт всю операционную систему из промпта, исполняет её от и до и даёт доказательства каждого действия и решения. Ты остаёшься CEO — система занимается исполнением.',
   },
   'faq.q4': {
     en: 'When does it launch?',
     ru: 'Когда запуск?',
   },
   'faq.a4': {
-    en: 'Early 2025. Join the waitlist to be first.',
-    ru: 'Начало 2025. Вступай в список ожидания, чтобы быть первым.',
+    en: '2026. Join the waitlist to get early access and shape what we build.',
+    ru: '2026. Вступай в список ожидания, чтобы получить ранний доступ и влиять на то, что мы строим.',
+  },
+  'faq.q5': {
+    en: 'What is the coverage contract?',
+    ru: 'Что такое контракт покрытия?',
+  },
+  'faq.a5': {
+    en: 'HELM covers 8 business domains. Some capabilities are ready now, others are planned, and complex edge cases use a human-bridge until automated. We are transparent about what is available today.',
+    ru: 'HELM покрывает 8 бизнес-доменов. Некоторые возможности готовы сейчас, другие запланированы, а сложные случаи используют human-bridge до автоматизации. Мы прозрачны о том, что доступно сегодня.',
   },
 
-  // Footer
+  // Footer - CORRECTED POSITIONING
   'footer.tagline': {
-    en: 'The operating system for your business.',
-    ru: 'Операционная система для твоего бизнеса.',
+    en: 'The business builder. You stay CEO.',
+    ru: 'Конструктор бизнеса. Ты остаёшься CEO.',
   },
   'footer.copyright': {
     en: '© 2025 HELM. All rights reserved.',
