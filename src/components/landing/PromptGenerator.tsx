@@ -20,7 +20,7 @@ import { supabase } from '@/integrations/supabase/client';
 
 type Mode = 'zero' | 'digitize' | null;
 type BusinessType = 'service' | 'ecommerce' | 'creator' | 'other' | null;
-type Step = 'mode' | 'business' | 'location' | 'generating' | 'ready';
+type Step = 'mode' | 'business' | 'digitize_details' | 'location' | 'generating' | 'ready';
 
 interface MarketSnapshot {
   bullets: string[];
@@ -49,6 +49,10 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   
+  // Digitize-specific fields
+  const [existingBusinessName, setExistingBusinessName] = useState('');
+  const [painPoints, setPainPoints] = useState('');
+  
   // Reality fetch state
   const [isFetchingReality, setIsFetchingReality] = useState(false);
   const [marketData, setMarketData] = useState<MarketSnapshot | null>(null);
@@ -56,7 +60,11 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
 
   const handleModeSelect = (selectedMode: Mode) => {
     setMode(selectedMode);
-    setStep('business');
+    if (selectedMode === 'digitize') {
+      setStep('digitize_details');
+    } else {
+      setStep('business');
+    }
   };
 
   const handleBusinessSelect = async (type: BusinessType) => {
@@ -75,6 +83,10 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
     await generatePrompt(businessType, location);
   };
 
+  const handleDigitizeSubmit = async () => {
+    await generatePrompt(businessType, location);
+  };
+
   const generatePrompt = async (type: BusinessType, loc: string) => {
     setStep('generating');
     setIsGenerating(true);
@@ -87,6 +99,9 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
           businessType: type,
           location: loc,
           locale: language,
+          // Digitize-specific context
+          existingBusinessName: mode === 'digitize' ? existingBusinessName : undefined,
+          painPoints: mode === 'digitize' ? painPoints : undefined,
         },
       });
 
@@ -163,6 +178,8 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
     setError(null);
     setMarketData(null);
     setRealityFetched(false);
+    setExistingBusinessName('');
+    setPainPoints('');
   };
 
   // Progress indicator
@@ -170,6 +187,7 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
     switch (step) {
       case 'mode': return 1;
       case 'business': return 2;
+      case 'digitize_details': return 2;
       case 'location': return 3;
       case 'generating': return 3.5;
       case 'ready': return 4;
@@ -281,6 +299,74 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
               </button>
             ))}
           </div>
+        </div>
+      )}
+
+      {/* Step 2b: Digitize Details (for existing business) */}
+      {step === 'digitize_details' && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="flex items-center justify-between">
+            <p className="text-sm text-muted-foreground">
+              {language === 'ru' ? 'Расскажи о своём бизнесе:' : 'Tell us about your business:'}
+            </p>
+            <button 
+              onClick={handleReset}
+              className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1 transition-colors"
+            >
+              ← {language === 'ru' ? 'Назад' : 'Back'}
+            </button>
+          </div>
+          
+          <div className="space-y-3">
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">
+                {language === 'ru' ? 'Название / тип бизнеса' : 'Business name / type'}
+              </label>
+              <input
+                type="text"
+                value={existingBusinessName}
+                onChange={(e) => setExistingBusinessName(e.target.value)}
+                placeholder={language === 'ru' ? 'Например: Автомастерская "Мотор"' : 'e.g., "Motor" Auto Repair Shop'}
+                className="w-full px-4 py-3 bg-secondary/50 border border-border/50 rounded-xl text-sm focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all placeholder:text-muted-foreground/50"
+              />
+            </div>
+            
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">
+                {language === 'ru' ? 'Что хочешь улучшить?' : 'What do you want to improve?'}
+              </label>
+              <textarea
+                value={painPoints}
+                onChange={(e) => setPainPoints(e.target.value)}
+                placeholder={language === 'ru' 
+                  ? 'Например: учёт клиентов в блокноте, забываю перезванивать, нет онлайн-записи...' 
+                  : 'e.g., tracking clients in a notebook, forgetting callbacks, no online booking...'}
+                className="w-full px-4 py-3 bg-secondary/50 border border-border/50 rounded-xl text-sm focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all placeholder:text-muted-foreground/50 min-h-[80px] resize-none"
+              />
+            </div>
+            
+            <div>
+              <label className="text-xs text-muted-foreground mb-1 block">
+                {language === 'ru' ? 'Город (опционально)' : 'City (optional)'}
+              </label>
+              <input
+                type="text"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder={language === 'ru' ? 'Например: Москва' : 'e.g., Berlin'}
+                className="w-full px-4 py-3 bg-secondary/50 border border-border/50 rounded-xl text-sm focus:border-accent/50 focus:outline-none focus:ring-2 focus:ring-accent/20 transition-all placeholder:text-muted-foreground/50"
+              />
+            </div>
+          </div>
+          
+          <Button
+            className="w-full gap-2 rounded-xl bg-accent hover:bg-accent/90 text-accent-foreground"
+            onClick={handleDigitizeSubmit}
+            disabled={!existingBusinessName.trim()}
+          >
+            <Sparkles className="w-4 h-4" />
+            {language === 'ru' ? 'Создать Business Program' : 'Create Business Program'}
+          </Button>
         </div>
       )}
 

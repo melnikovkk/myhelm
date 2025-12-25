@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { mode, businessType, location, locale } = await req.json();
+    const { mode, businessType, location, locale, existingBusinessName, painPoints } = await req.json();
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     
@@ -19,68 +19,97 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log('Generating prompt:', { mode, businessType, location, locale });
+    console.log('Generating prompt:', { mode, businessType, location, locale, existingBusinessName });
 
-    // Build context for prompt generation
-    const modeContext = mode === 'zero' 
-      ? (locale === 'ru' ? 'запуск нового бизнеса с нуля' : 'starting a new business from scratch')
-      : (locale === 'ru' ? 'оцифровка существующего бизнеса' : 'digitizing an existing business');
+    const isDigitize = mode === 'digitize';
+    const isRu = locale === 'ru';
 
-    const businessContextMap: Record<string, { en: string; ru: string }> = {
-      service: { 
-        ru: 'сервисный бизнес (клининг, ремонт, консалтинг и т.д.)', 
-        en: 'service business (cleaning, repair, consulting, etc.)' 
-      },
-      ecommerce: { 
-        ru: 'интернет-магазин или товарный бизнес', 
-        en: 'e-commerce or product business' 
-      },
-      creator: { 
-        ru: 'блогер, автор контента, инфобизнес', 
-        en: 'content creator, blogger, info-business' 
-      },
-      other: { 
-        ru: 'уникальный или нишевый бизнес', 
-        en: 'unique or niche business' 
-      },
-    };
+    // Different prompt generation for digitize vs zero
+    let systemPrompt: string;
+    let userMessage: string;
 
-    const businessInfo = businessContextMap[businessType as string] || businessContextMap.other;
-    const businessContext = locale === 'ru' ? businessInfo.ru : businessInfo.en;
-
-    const locationContext = location 
-      ? (locale === 'ru' ? `в ${location}` : `in ${location}`) 
-      : '';
-
-    const systemPrompt = locale === 'ru'
-      ? `Ты — генератор демо-промптов для платформы HELM, которая запускает бизнесы одним промптом.
-Твоя задача: написать 1-2 предложения — реалистичный, конкретный промпт для демо.
+    if (isDigitize) {
+      // Digitize existing business - focus on transformation
+      systemPrompt = isRu
+        ? `Ты — генератор промптов для HELM — платформы, которая оцифровывает существующие бизнесы.
+Твоя задача: написать 1-2 предложения — промпт для оцифровки бизнеса клиента.
 Промпт должен:
-- Описывать конкретную бизнес-идею (не абстрактную)
-- Включать тип услуги/продукта и целевую аудиторию
+- Упомянуть название/тип бизнеса клиента
+- Описать конкретные улучшения (онлайн-запись, CRM, автоматизация напоминаний и т.д.)
+- Звучать как задача для трансформации, а не создания с нуля
 - Быть на русском языке
-- Быть вдохновляющим, но реалистичным
-Примеры хороших промптов:
-- "Запусти сервис экспресс-уборки квартир для занятых профессионалов в Москве"
-- "Создай магазин крафтовых свечей ручной работы с доставкой по СНГ"
-- "Помоги оцифровать мою автомастерскую: онлайн-запись, напоминания, учёт"
+Примеры:
+- "Оцифруй мою автомастерскую: внедри онлайн-запись, автоматические напоминания о ТО и учёт клиентов"
+- "Переведи мой салон красоты в цифру: CRM для клиентов, онлайн-бронирование и SMS-напоминания"
 Отвечай ТОЛЬКО промптом, без объяснений.`
-      : `You are a demo prompt generator for HELM platform that launches businesses with one prompt.
-Your task: write 1-2 sentences — a realistic, specific demo prompt.
+        : `You are a prompt generator for HELM — a platform that digitizes existing businesses.
+Your task: write 1-2 sentences — a prompt for digitizing the client's business.
 The prompt should:
-- Describe a concrete business idea (not abstract)
-- Include the type of service/product and target audience
+- Mention the client's business name/type
+- Describe specific improvements (online booking, CRM, automated reminders, etc.)
+- Sound like a transformation task, not creation from scratch
 - Be in English
-- Be inspiring but realistic
-Examples of good prompts:
-- "Launch an express apartment cleaning service for busy professionals in Berlin"
-- "Create a handmade craft candle shop with EU-wide delivery"
-- "Help digitize my auto repair shop: online booking, reminders, inventory"
+Examples:
+- "Digitize my auto repair shop: add online booking, automatic service reminders, and customer tracking"
+- "Transform my beauty salon to digital: CRM for clients, online scheduling, and SMS reminders"
 Reply ONLY with the prompt, no explanations.`;
 
-    const userMessage = locale === 'ru'
-      ? `Сгенерируй промпт для: ${modeContext}, ${businessContext}${locationContext ? ` ${locationContext}` : ''}. Будь конкретен и креативен.`
-      : `Generate a prompt for: ${modeContext}, ${businessContext}${locationContext ? ` ${locationContext}` : ''}. Be specific and creative.`;
+      userMessage = isRu
+        ? `Бизнес: ${existingBusinessName || 'не указан'}. Проблемы: ${painPoints || 'хочу оцифровать'}. ${location ? `Локация: ${location}.` : ''} Сгенерируй промпт для оцифровки.`
+        : `Business: ${existingBusinessName || 'not specified'}. Pain points: ${painPoints || 'want to digitize'}. ${location ? `Location: ${location}.` : ''} Generate a digitization prompt.`;
+    } else {
+      // Start from zero - focus on new business creation
+      const businessContextMap: Record<string, { en: string; ru: string }> = {
+        service: { 
+          ru: 'сервисный бизнес', 
+          en: 'service business' 
+        },
+        ecommerce: { 
+          ru: 'e-commerce / товарный бизнес', 
+          en: 'e-commerce / product business' 
+        },
+        creator: { 
+          ru: 'блогер / автор контента', 
+          en: 'content creator / blogger' 
+        },
+        other: { 
+          ru: 'уникальный бизнес', 
+          en: 'unique business' 
+        },
+      };
+
+      const businessInfo = businessContextMap[businessType as string] || businessContextMap.other;
+      const businessContext = isRu ? businessInfo.ru : businessInfo.en;
+      const locationContext = location ? (isRu ? `в ${location}` : `in ${location}`) : '';
+
+      systemPrompt = isRu
+        ? `Ты — генератор демо-промптов для HELM — платформы, которая строит бизнесы с нуля одним промптом.
+Твоя задача: написать 1-2 предложения — промпт для запуска нового бизнеса.
+Промпт должен:
+- Описывать конкретную бизнес-идею (не абстрактную)
+- Включать тип продукта/услуги и целевую аудиторию
+- Быть на русском языке
+- Звучать как амбициозная, но реалистичная цель
+Примеры:
+- "Запусти сервис экспресс-доставки здоровой еды для офисных работников в Москве"
+- "Создай онлайн-школу английского для IT-специалистов с гибким расписанием"
+Отвечай ТОЛЬКО промптом, без объяснений.`
+        : `You are a demo prompt generator for HELM — a platform that builds businesses from scratch with one prompt.
+Your task: write 1-2 sentences — a prompt for launching a new business.
+The prompt should:
+- Describe a concrete business idea (not abstract)
+- Include the type of product/service and target audience
+- Be in English
+- Sound like an ambitious but realistic goal
+Examples:
+- "Launch a healthy meal express delivery service for office workers in Berlin"
+- "Create an online English school for IT professionals with flexible scheduling"
+Reply ONLY with the prompt, no explanations.`;
+
+      userMessage = isRu
+        ? `Тип: ${businessContext}${locationContext ? `. Локация: ${locationContext}` : ''}. Сгенерируй креативный промпт для запуска нового бизнеса.`
+        : `Type: ${businessContext}${locationContext ? `. Location: ${locationContext}` : ''}. Generate a creative prompt for launching a new business.`;
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
