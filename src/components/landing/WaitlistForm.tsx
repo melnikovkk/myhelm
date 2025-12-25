@@ -7,8 +7,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Sparkles, AlertCircle } from 'lucide-react';
-import { saveWaitlistEntry, emailExists } from '@/lib/storage';
+import { Loader2, Sparkles } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 
 const WaitlistForm = () => {
   const { t, language } = useLanguage();
@@ -19,7 +19,6 @@ const WaitlistForm = () => {
   const [prompt, setPrompt] = useState('');
   const [mode, setMode] = useState<'new' | 'digitize'>('new');
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [isDemoMode] = useState(true); // Will be false when Supabase is connected
 
   const validateEmail = (email: string) => {
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
@@ -47,9 +46,18 @@ const WaitlistForm = () => {
     setIsSubmitting(true);
 
     try {
-      // Demo mode: save to localStorage
-      if (isDemoMode) {
-        if (emailExists(email)) {
+      const { error } = await supabase
+        .from('waitlist_signups')
+        .insert({
+          email,
+          prompt: prompt || null,
+          mode,
+          language,
+        });
+
+      if (error) {
+        // Handle duplicate email
+        if (error.code === '23505') {
           toast({
             title: language === 'ru' ? 'Этот email уже в списке' : 'This email is already on the list',
             variant: 'destructive',
@@ -57,24 +65,7 @@ const WaitlistForm = () => {
           setIsSubmitting(false);
           return;
         }
-
-        saveWaitlistEntry({
-          email,
-          prompt: prompt || undefined,
-          mode,
-          language,
-        });
-
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 800));
-      } else {
-        // TODO: Supabase integration
-        // const { error } = await supabase.from('waitlist_signups').insert({
-        //   email,
-        //   prompt: prompt || null,
-        //   mode,
-        //   language,
-        // });
+        throw error;
       }
 
       toast({
@@ -84,6 +75,7 @@ const WaitlistForm = () => {
 
       navigate('/thanks');
     } catch (error) {
+      console.error('Waitlist submission error:', error);
       toast({
         title: t('error.generic'),
         variant: 'destructive',
@@ -99,14 +91,6 @@ const WaitlistForm = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-lg mx-auto">
-          {/* Demo mode banner */}
-          {isDemoMode && (
-            <div className="mb-6 p-3 rounded-lg bg-accent/10 border border-accent/30 flex items-center gap-2 text-sm text-accent">
-              <AlertCircle className="w-4 h-4 flex-shrink-0" />
-              {t('waitlist.demo.banner')}
-            </div>
-          )}
-
           <div className="glass-card p-6 md:p-8">
             <div className="text-center mb-8">
               <div className="w-12 h-12 rounded-xl bg-primary/10 flex items-center justify-center mx-auto mb-4">
