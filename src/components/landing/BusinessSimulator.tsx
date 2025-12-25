@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef, forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
@@ -9,6 +9,19 @@ import BusinessTab from './BusinessTab';
 import RealityTab from './RealityTab';
 import CoverageTab from './CoverageTab';
 import BossDecisionModal from './BossDecisionModal';
+
+/*
+ * DEMO HAPPY PATH CHECKLIST (verified after fixes):
+ * 1. ✓ Prompt generated via wizard OR canon fallback
+ * 2. ✓ Click "Launch" → LAUNCHING state → AI generates artifacts
+ * 3. ✓ ARTIFACTS revealed with business data
+ * 4. ✓ Click "Run test day" → timeline animates
+ * 5. ✓ At 15:30 → DECISION state → modal appears, timeline PAUSES
+ * 6. ✓ Make decision → timeline RESUMES
+ * 7. ✓ At 100% → EVIDENCE trophies appear
+ * 8. ✓ REPLAY mode → scrubber works, can run again
+ * 9. ✓ "Edit prompt" returns to TYPED keeping prompt text
+ */
 
 // Demo state machine states
 export type SimulatorState = 
@@ -67,7 +80,8 @@ const TIMELINE_EVENTS: TimelineEvent[] = [
   { time: '17:00', key: 'timeline.17:00', progress: 100 },
 ];
 
-const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSimulatorProps) => {
+const BusinessSimulator = forwardRef<HTMLDivElement, BusinessSimulatorProps>(
+  ({ state, setState, prompt, onEditPrompt }, ref) => {
   const { t, language } = useLanguage();
   const [activeTab, setActiveTab] = useState('business');
   const [timelineProgress, setTimelineProgress] = useState(0);
@@ -77,6 +91,9 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
   const [evidenceRevealed, setEvidenceRevealed] = useState<number[]>([]);
   const [businessData, setBusinessData] = useState<BusinessData | null>(null);
   const [isGenerating, setIsGenerating] = useState(false);
+  
+  // Ref for timeline interval to ensure proper cleanup
+  const timelineIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Generate business data from LLM when entering LAUNCHING state
   useEffect(() => {
@@ -124,11 +141,18 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
     }
   };
 
-  // Timeline animation
+  // Timeline animation - uses ref for proper cleanup
   useEffect(() => {
+    // Clear any existing interval
+    if (timelineIntervalRef.current) {
+      clearInterval(timelineIntervalRef.current);
+      timelineIntervalRef.current = null;
+    }
+    
+    // Only run when in RUNNING state
     if (state !== 'RUNNING') return;
 
-    const interval = setInterval(() => {
+    timelineIntervalRef.current = setInterval(() => {
       setTimelineProgress(prev => {
         const next = prev + 0.5;
         
@@ -137,19 +161,27 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
         if (eventIndex !== currentEventIndex && eventIndex >= 0) {
           setCurrentEventIndex(eventIndex);
           
-          // Check for boss decision event
+          // Check for boss decision event - IMMEDIATELY pause and show modal
           const currentEvent = TIMELINE_EVENTS[eventIndex];
-          if (currentEvent?.isBossDecision) {
+          if (currentEvent?.isBossDecision && !decisionMade) {
+            // Clear interval immediately to prevent any further ticks
+            if (timelineIntervalRef.current) {
+              clearInterval(timelineIntervalRef.current);
+              timelineIntervalRef.current = null;
+            }
             setState('DECISION');
             setShowDecisionModal(true);
-            return prev; // Pause progress
+            return prev; // Keep current progress
           }
         }
         
         // Complete
         if (next >= 100) {
+          if (timelineIntervalRef.current) {
+            clearInterval(timelineIntervalRef.current);
+            timelineIntervalRef.current = null;
+          }
           setState('EVIDENCE');
-          clearInterval(interval);
           return 100;
         }
         
@@ -157,8 +189,13 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
       });
     }, 100);
 
-    return () => clearInterval(interval);
-  }, [state, currentEventIndex, setState]);
+    return () => {
+      if (timelineIntervalRef.current) {
+        clearInterval(timelineIntervalRef.current);
+        timelineIntervalRef.current = null;
+      }
+    };
+  }, [state, currentEventIndex, setState, decisionMade]);
 
   // Reveal evidence trophies
   useEffect(() => {
@@ -206,6 +243,14 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
     setTimelineProgress(progress);
     const eventIndex = TIMELINE_EVENTS.findIndex(e => e.progress > progress) - 1;
     setCurrentEventIndex(Math.max(0, eventIndex));
+    
+    // Sync evidence revealed based on progress
+    // Evidence appears at ~87.5%, ~93%, ~100%
+    const newEvidence: number[] = [];
+    if (progress >= 87.5) newEvidence.push(0);
+    if (progress >= 93) newEvidence.push(1);
+    if (progress >= 100) newEvidence.push(2);
+    setEvidenceRevealed(newEvidence);
   }, [state]);
 
   // Show loading state while generating
@@ -315,6 +360,8 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt }: BusinessSi
       />
     </div>
   );
-};
+});
+
+BusinessSimulator.displayName = 'BusinessSimulator';
 
 export default BusinessSimulator;

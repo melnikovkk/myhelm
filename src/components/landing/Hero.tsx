@@ -35,7 +35,7 @@ const Hero = () => {
     if (!isLaunchEnabled || state === 'LAUNCHING') return;
     setIsEditing(false);
     setState('LAUNCHING');
-    setTimeout(() => setState('ARTIFACTS'), 1500);
+    // Note: BusinessSimulator handles transition to ARTIFACTS after AI generation completes
   };
 
   const handleEditPrompt = () => {
