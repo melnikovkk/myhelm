@@ -1,1 +1,7 @@
 project_id = "bhegbmnkqenrsdhudcck"
+
+[functions.market-snapshot]
+verify_jwt = false
+
+[functions.competitor-scan]
+verify_jwt = false

@@ -10,97 +10,159 @@ import {
   Loader2, 
   ExternalLink, 
   Volume2, 
-  AlertCircle 
+  AlertCircle,
+  CheckCircle
 } from 'lucide-react';
+import { supabase } from '@/integrations/supabase/client';
 import { 
   getRealityRemaining, 
-  canUseReality 
+  canUseReality,
+  incrementRealityUsage,
+  getCachedReality,
+  setCachedReality
 } from '@/lib/storage';
 
 interface RealityTabProps {
   prompt: string;
 }
 
+interface MarketData {
+  bullets: string[];
+  sources: { title: string; url: string }[];
+}
+
+interface CompetitorData {
+  services?: string[];
+  packages?: { name: string; price?: string }[];
+  contact?: string;
+  positioning?: string;
+}
+
 const RealityTab = ({ prompt }: RealityTabProps) => {
   const { t, language } = useLanguage();
-  const [isFetching, setIsFetching] = useState(false);
-  const [marketData, setMarketData] = useState<{
-    bullets: string[];
-    sources: { title: string; url: string }[];
-  } | null>(null);
+  const [isFetchingMarket, setIsFetchingMarket] = useState(false);
+  const [isFetchingCompetitor, setIsFetchingCompetitor] = useState(false);
+  const [marketData, setMarketData] = useState<MarketData | null>(null);
+  const [marketError, setMarketError] = useState<string | null>(null);
   const [competitorUrl, setCompetitorUrl] = useState('');
-  const [competitorData, setCompetitorData] = useState<{
-    services?: string[];
-    packages?: { name: string; price?: string }[];
-    positioning?: string;
-  } | null>(null);
+  const [competitorData, setCompetitorData] = useState<CompetitorData | null>(null);
+  const [competitorError, setCompetitorError] = useState<string | null>(null);
   const [voiceEnabled, setVoiceEnabled] = useState(false);
   const [voiceTranscript, setVoiceTranscript] = useState<string | null>(null);
   
   const remaining = getRealityRemaining();
   const canFetch = canUseReality();
 
-  const handleFetchReality = async () => {
-    if (!canFetch || isFetching) return;
+  // Extract business type and city from prompt
+  const extractBusinessInfo = () => {
+    const words = prompt.toLowerCase();
+    let businessType = 'cleaning';
+    let city = 'Berlin';
     
-    setIsFetching(true);
-    
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Mock data (will be replaced with real API calls)
-    setMarketData({
-      bullets: language === 'ru' 
-        ? [
-            'Рынок клининга в Берлине растёт на 12% ежегодно',
-            'Средний чек: €70-120 за визит',
-            'WhatsApp — ключевой канал для бронирования',
-            'Качество и пунктуальность — главные факторы выбора',
-          ]
-        : [
-            'Berlin cleaning market growing 12% annually',
-            'Average ticket: €70-120 per visit',
-            'WhatsApp is the key booking channel',
-            'Quality and punctuality are top decision factors',
-          ],
-      sources: [
-        { title: 'Statista Market Report 2024', url: 'https://statista.com' },
-        { title: 'Berlin Business Index', url: 'https://berlin.de/business' },
-      ],
-    });
-    
-    if (voiceEnabled) {
-      setVoiceTranscript(
-        language === 'ru'
-          ? 'Краткий брифинг: рынок показывает устойчивый рост на 12% в год. Основные конкуренты фокусируются на качестве. Рекомендую WhatsApp для быстрого старта.'
-          : 'Quick briefing: the market shows steady 12% annual growth. Main competitors focus on quality. I recommend WhatsApp for a quick start.'
-      );
+    if (words.includes('клининг') || words.includes('уборк') || words.includes('cleaning')) {
+      businessType = language === 'ru' ? 'клининг' : 'cleaning';
+    } else if (words.includes('консалтинг') || words.includes('consulting')) {
+      businessType = language === 'ru' ? 'консалтинг' : 'consulting';
     }
     
-    setIsFetching(false);
+    if (words.includes('берлин') || words.includes('berlin')) {
+      city = language === 'ru' ? 'Берлин' : 'Berlin';
+    } else if (words.includes('москв') || words.includes('moscow')) {
+      city = language === 'ru' ? 'Москва' : 'Moscow';
+    }
+    
+    return { businessType, city };
+  };
+
+  const handleFetchReality = async () => {
+    if (!canFetch || isFetchingMarket) return;
+    
+    // Check cache first
+    const cacheKey = `market:${prompt}`;
+    const cached = getCachedReality(cacheKey, language, 'market');
+    if (cached) {
+      setMarketData(cached as MarketData);
+      return;
+    }
+    
+    setIsFetchingMarket(true);
+    setMarketError(null);
+    
+    try {
+      const { businessType, city } = extractBusinessInfo();
+      
+      const { data, error } = await supabase.functions.invoke('market-snapshot', {
+        body: { businessType, city, locale: language },
+      });
+      
+      if (error) throw error;
+      
+      if (data.success && data.data) {
+        setMarketData(data.data);
+        incrementRealityUsage();
+        setCachedReality(cacheKey, language, 'market', data.data);
+        
+        // Generate voice transcript if enabled
+        if (voiceEnabled) {
+          const summary = data.data.bullets.slice(0, 2).join('. ');
+          setVoiceTranscript(
+            language === 'ru'
+              ? `Краткий брифинг: ${summary}`
+              : `Quick briefing: ${summary}`
+          );
+        }
+      } else {
+        throw new Error(data.error || 'Failed to fetch market data');
+      }
+    } catch (error) {
+      console.error('Market snapshot error:', error);
+      setMarketError(
+        language === 'ru' 
+          ? 'Не удалось загрузить данные о рынке' 
+          : 'Failed to fetch market data'
+      );
+    } finally {
+      setIsFetchingMarket(false);
+    }
   };
 
   const handleScanCompetitor = async () => {
-    if (!competitorUrl || !canFetch) return;
+    if (!competitorUrl || !canFetch || isFetchingCompetitor) return;
     
-    setIsFetching(true);
-    await new Promise(resolve => setTimeout(resolve, 1500));
+    // Check cache
+    const cached = getCachedReality(competitorUrl, language, 'competitor', competitorUrl);
+    if (cached) {
+      setCompetitorData(cached as CompetitorData);
+      return;
+    }
     
-    // Mock competitor data
-    setCompetitorData({
-      services: language === 'ru' 
-        ? ['Уборка квартир', 'Генеральная уборка', 'Мытьё окон']
-        : ['Apartment cleaning', 'Deep cleaning', 'Window washing'],
-      packages: [
-        { name: language === 'ru' ? 'Стандарт' : 'Standard', price: '€55' },
-        { name: language === 'ru' ? 'Премиум' : 'Premium', price: '€95' },
-      ],
-      positioning: language === 'ru' 
-        ? 'Фокус на экологичных средствах и гибком графике'
-        : 'Focus on eco-friendly products and flexible scheduling',
-    });
+    setIsFetchingCompetitor(true);
+    setCompetitorError(null);
     
-    setIsFetching(false);
+    try {
+      const { data, error } = await supabase.functions.invoke('competitor-scan', {
+        body: { url: competitorUrl, locale: language },
+      });
+      
+      if (error) throw error;
+      
+      if (data.success && data.data) {
+        setCompetitorData(data.data);
+        incrementRealityUsage();
+        setCachedReality(competitorUrl, language, 'competitor', data.data, competitorUrl);
+      } else {
+        throw new Error(data.error || 'Failed to scan competitor');
+      }
+    } catch (error) {
+      console.error('Competitor scan error:', error);
+      setCompetitorError(
+        language === 'ru' 
+          ? 'Не удалось просканировать сайт конкурента' 
+          : 'Failed to scan competitor website'
+      );
+    } finally {
+      setIsFetchingCompetitor(false);
+    }
   };
 
   return (
@@ -124,11 +186,11 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
             </span>
             <Button
               onClick={handleFetchReality}
-              disabled={!canFetch || isFetching}
+              disabled={!canFetch || isFetchingMarket}
               size="sm"
               className="gap-2"
             >
-              {isFetching ? (
+              {isFetchingMarket ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
                   {t('reality.fetching')}
@@ -158,9 +220,19 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
       </div>
 
       {/* Market Snapshot */}
+      {marketError && (
+        <div className="glass-card p-5 border-destructive/50 animate-fade-in">
+          <div className="flex items-center gap-2 text-destructive">
+            <AlertCircle className="w-4 h-4" />
+            <span className="text-sm">{marketError}</span>
+          </div>
+        </div>
+      )}
+      
       {marketData && (
         <div className="glass-card p-5 animate-fade-in">
-          <h4 className="font-semibold text-foreground mb-4">
+          <h4 className="font-semibold text-foreground mb-4 flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-success" />
             {t('reality.market.title')}
           </h4>
           <ul className="space-y-2 mb-4">
@@ -171,23 +243,25 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
               </li>
             ))}
           </ul>
-          <div className="pt-3 border-t border-border/50">
-            <span className="text-xs text-muted-foreground">{t('reality.market.sources')}:</span>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {marketData.sources.map((source, i) => (
-                <a
-                  key={i}
-                  href={source.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-primary hover:underline flex items-center gap-1"
-                >
-                  {source.title}
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-              ))}
+          {marketData.sources.length > 0 && (
+            <div className="pt-3 border-t border-border/50">
+              <span className="text-xs text-muted-foreground">{t('reality.market.sources')}:</span>
+              <div className="flex flex-wrap gap-2 mt-2">
+                {marketData.sources.map((source, i) => (
+                  <a
+                    key={i}
+                    href={source.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs text-primary hover:underline flex items-center gap-1"
+                  >
+                    {source.title}
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       )}
 
@@ -223,11 +297,16 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
           />
           <Button
             onClick={handleScanCompetitor}
-            disabled={!competitorUrl || !canFetch || isFetching}
+            disabled={!competitorUrl || !canFetch || isFetchingCompetitor}
             variant="outline"
             size="sm"
+            className="gap-2"
           >
-            {t('reality.competitor.scan')}
+            {isFetchingCompetitor ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              t('reality.competitor.scan')
+            )}
           </Button>
         </div>
         
@@ -237,10 +316,17 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
           </p>
         )}
 
+        {competitorError && (
+          <div className="mt-4 flex items-center gap-2 text-destructive text-sm">
+            <AlertCircle className="w-4 h-4" />
+            {competitorError}
+          </div>
+        )}
+
         {competitorData && (
           <div className="mt-4 pt-4 border-t border-border/50 animate-fade-in">
             <div className="grid gap-3 text-sm">
-              {competitorData.services && (
+              {competitorData.services && competitorData.services.length > 0 && (
                 <div>
                   <span className="text-muted-foreground">{language === 'ru' ? 'Услуги:' : 'Services:'}</span>
                   <div className="flex flex-wrap gap-1 mt-1">
@@ -252,17 +338,23 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
                   </div>
                 </div>
               )}
-              {competitorData.packages && (
+              {competitorData.packages && competitorData.packages.length > 0 && (
                 <div>
                   <span className="text-muted-foreground">{language === 'ru' ? 'Пакеты:' : 'Packages:'}</span>
                   <div className="mt-1 space-y-1">
                     {competitorData.packages.map((p, i) => (
                       <div key={i} className="flex justify-between text-foreground">
                         <span>{p.name}</span>
-                        <span className="font-mono text-accent">{p.price}</span>
+                        {p.price && <span className="font-mono text-accent">{p.price}</span>}
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+              {competitorData.contact && (
+                <div>
+                  <span className="text-muted-foreground">{language === 'ru' ? 'Контакты:' : 'Contact:'}</span>
+                  <p className="text-foreground mt-1">{competitorData.contact}</p>
                 </div>
               )}
               {competitorData.positioning && (
