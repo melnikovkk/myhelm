@@ -1,0 +1,51 @@
+import { useLanguage } from '@/hooks/useLanguage';
+import { TranslationKey } from '@/lib/translations';
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from '@/components/ui/accordion';
+
+const FAQ_ITEMS = [
+  { q: 'faq.q1', a: 'faq.a1' },
+  { q: 'faq.q2', a: 'faq.a2' },
+  { q: 'faq.q3', a: 'faq.a3' },
+  { q: 'faq.q4', a: 'faq.a4' },
+] as const;
+
+const FAQ = () => {
+  const { t } = useLanguage();
+
+  return (
+    <section className="py-20 md:py-32">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
+          {t('faq.title')}
+        </h2>
+        <div className="w-20 h-1 bg-primary mx-auto mb-12 rounded-full" />
+
+        <div className="max-w-2xl mx-auto">
+          <Accordion type="single" collapsible className="space-y-3">
+            {FAQ_ITEMS.map(({ q, a }, i) => (
+              <AccordionItem 
+                key={i} 
+                value={`item-${i}`}
+                className="glass-card border-border/50 rounded-lg px-6 data-[state=open]:border-primary/30"
+              >
+                <AccordionTrigger className="text-left text-foreground hover:text-primary py-4 hover:no-underline">
+                  {t(q as TranslationKey)}
+                </AccordionTrigger>
+                <AccordionContent className="text-muted-foreground pb-4">
+                  {t(a as TranslationKey)}
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
+        </div>
+      </div>
+    </section>
+  );
+};
+
+export default FAQ;
