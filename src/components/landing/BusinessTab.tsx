@@ -11,9 +11,11 @@ import {
   Receipt,
   CheckCircle,
   XCircle,
-  HelpCircle
+  HelpCircle,
+  Trophy
 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
+import RunHUD from './RunHUD';
 
 // Timeline events
 const TIMELINE_EVENTS = [
@@ -48,9 +50,26 @@ const BusinessTab = ({
 }: BusinessTabProps) => {
   const { t, language } = useLanguage();
   const showTimeline = ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
+  const isReplay = state === 'REPLAY';
+
+  // For fog-of-war effect in replay: determine which elements should be visible
+  const getFogClass = (elementProgress: number) => {
+    if (!isReplay) return '';
+    const isVisible = Math.abs(timelineProgress - elementProgress) < 20;
+    return isVisible ? 'fog-visible' : 'fog-hidden';
+  };
 
   return (
     <div className="space-y-6">
+      {/* Run HUD - gamified command center */}
+      <RunHUD
+        state={state}
+        timelineProgress={timelineProgress}
+        currentEventIndex={currentEventIndex}
+        decisionMade={decisionMade}
+        isReplay={isReplay}
+      />
+
       {/* Three Artifact Panels */}
       <div className="grid md:grid-cols-3 gap-4">
         {/* Artifact A: Business Blueprint */}
@@ -173,27 +192,33 @@ const BusinessTab = ({
               </div>
             </div>
 
-            {/* Evidence Trophies */}
+            {/* Evidence Trophies - Loot/Proof with trophy styling */}
             {evidenceRevealed.length > 0 && (
               <div className="pt-3 border-t border-border/50">
-                <span className="text-muted-foreground">{t('artifact.launch.evidence')}:</span>
+                <div className="flex items-center gap-2 mb-2">
+                  <Trophy className="w-4 h-4 text-accent" />
+                  <span className="text-muted-foreground font-medium">{t('artifact.launch.evidence')}:</span>
+                </div>
                 <div className="mt-2 space-y-2">
                   {evidenceRevealed.includes(0) && (
-                    <div className="trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-2 py-1 rounded">
+                    <div className={`trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-3 py-2 rounded-lg border border-success/20 ${isReplay ? getFogClass(87.5) : ''}`}>
                       <Camera className="w-4 h-4 text-success" />
-                      <span>{t('evidence.booking')}</span>
+                      <span className="flex-1">{t('evidence.booking')}</span>
+                      <span className="text-xs text-success">+1</span>
                     </div>
                   )}
                   {evidenceRevealed.includes(1) && (
-                    <div className="trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-2 py-1 rounded">
+                    <div className={`trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-3 py-2 rounded-lg border border-success/20 ${isReplay ? getFogClass(93) : ''}`}>
                       <CheckCircle className="w-4 h-4 text-success" />
-                      <span>{t('evidence.verified')}</span>
+                      <span className="flex-1">{t('evidence.verified')}</span>
+                      <span className="text-xs text-success">+1</span>
                     </div>
                   )}
                   {evidenceRevealed.includes(2) && (
-                    <div className="trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-2 py-1 rounded">
+                    <div className={`trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-3 py-2 rounded-lg border border-success/20 ${isReplay ? getFogClass(100) : ''}`}>
                       <Receipt className="w-4 h-4 text-success" />
-                      <span>{t('evidence.payment')}</span>
+                      <span className="flex-1">{t('evidence.payment')}</span>
+                      <span className="text-xs text-success">+1</span>
                     </div>
                   )}
                 </div>
