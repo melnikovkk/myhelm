@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKey } from '@/lib/translations';
 import {
@@ -16,11 +15,11 @@ const FAQ_ITEMS = [
   { q: 'faq.q5', a: 'faq.a5' },
 ] as const;
 
-const FAQ = forwardRef<HTMLElement>((_, ref) => {
+const FAQ = () => {
   const { t } = useLanguage();
 
   return (
-    <section ref={ref} className="py-20 md:py-32">
+    <section className="py-20 md:py-32">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
           {t('faq.title')}
@@ -48,8 +47,6 @@ const FAQ = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-});
-
-FAQ.displayName = 'FAQ';
+};
 
 export default FAQ;

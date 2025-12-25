@@ -1,11 +1,10 @@
-import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 
-const Footer = forwardRef<HTMLElement>((_, ref) => {
+const Footer = () => {
   const { t } = useLanguage();
 
   return (
-    <footer ref={ref} className="border-t border-border/50 bg-background/50 backdrop-blur-xl">
+    <footer className="border-t border-border/50 bg-background/50 backdrop-blur-xl">
       <div className="container mx-auto px-4 py-12">
         <div className="flex flex-col md:flex-row items-center justify-between gap-6">
           {/* Logo + Tagline */}
@@ -26,8 +25,6 @@ const Footer = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </footer>
   );
-});
-
-Footer.displayName = 'Footer';
+};
 
 export default Footer;
