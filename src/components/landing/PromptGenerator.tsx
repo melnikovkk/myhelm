@@ -304,16 +304,21 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon, region, industry }: Pr
         </div>
       )}
 
-      {/* Step 2: Business Type */}
+      {/* Step 2: Business Type - Skip if industry already selected from dropdown */}
       {step === 'business' && (
         <div className="space-y-5 animate-fade-in">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-foreground mb-1">
-                {language === 'ru' ? 'Тип бизнеса' : 'Business type'}
+                {language === 'ru' ? 'Уточните тип' : 'Specify type'}
               </h3>
               <p className="text-sm text-muted-foreground">
-                {language === 'ru' ? 'Что вы хотите построить?' : 'What do you want to build?'}
+                {industry 
+                  ? (language === 'ru' 
+                      ? `Выбрано: ${industry.labelRu}. Уточните детали:` 
+                      : `Selected: ${industry.labelEn}. Add details:`)
+                  : (language === 'ru' ? 'Что вы хотите построить?' : 'What do you want to build?')
+                }
               </p>
             </div>
             <button 
@@ -324,15 +329,45 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon, region, industry }: Pr
             </button>
           </div>
           
+          {/* Show quick action to continue with selected industry */}
+          {industry && (
+            <button
+              onClick={() => generatePrompt(industry.key as BusinessType, '')}
+              className="w-full py-4 px-5 flex items-center justify-between rounded-xl border-2 border-primary/30 bg-primary/5 hover:border-primary hover:bg-primary/10 transition-all duration-300 group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  <Sparkles className="w-5 h-5 text-primary" />
+                </div>
+                <div className="text-left">
+                  <span className="block text-sm font-semibold text-foreground">
+                    {language === 'ru' ? `Продолжить с "${industry.labelRu}"` : `Continue with "${industry.labelEn}"`}
+                  </span>
+                  <span className="text-xs text-muted-foreground">
+                    {language === 'ru' ? 'Использовать выбранную отрасль' : 'Use the selected industry'}
+                  </span>
+                </div>
+              </div>
+              <ArrowRight className="w-5 h-5 text-primary opacity-50 group-hover:opacity-100 transition-opacity" />
+            </button>
+          )}
+          
+          <div className="relative flex items-center justify-center">
+            <div className="absolute inset-x-0 top-1/2 h-px bg-border/50" />
+            <span className="relative px-3 text-xs text-muted-foreground bg-card">
+              {language === 'ru' ? 'или выберите другой' : 'or choose different'}
+            </span>
+          </div>
+          
           <div className="grid grid-cols-2 gap-3">
-            {BUSINESS_TYPES.map(({ key, icon: Icon, labelEn, labelRu, descEn, descRu, color }) => (
+            {BUSINESS_TYPES.filter(b => !industry || b.key !== industry.key).map(({ key, icon: Icon, labelEn, labelRu, descEn, descRu, color }) => (
               <button
                 key={key}
-                className={`group h-auto py-5 px-4 flex flex-col items-center gap-3 rounded-xl border-2 border-border/50 bg-card/50 hover:border-${color} hover:bg-${color}/5 transition-all duration-300`}
+                className={`group h-auto py-4 px-4 flex flex-col items-center gap-2.5 rounded-xl border-2 border-border/50 bg-card/50 hover:border-${color} hover:bg-${color}/5 transition-all duration-300`}
                 onClick={() => handleBusinessSelect(key as BusinessType)}
               >
-                <div className={`w-12 h-12 rounded-xl bg-${color}/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                  <Icon className={`w-6 h-6 text-${color}`} />
+                <div className={`w-10 h-10 rounded-lg bg-${color}/10 flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                  <Icon className={`w-5 h-5 text-${color}`} />
                 </div>
                 <div className="text-center">
                   <span className="block text-sm font-medium text-foreground">
