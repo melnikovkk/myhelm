@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { Globe } from 'lucide-react';
@@ -13,12 +14,12 @@ const Navbar = () => {
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50">
       <nav className="container mx-auto px-4 h-16 flex items-center justify-between">
         {/* Logo */}
-        <a href="/" className="flex items-center gap-2 group">
+        <Link to="/" className="flex items-center gap-2 group">
           <span className="font-mono text-xl font-bold tracking-wider text-foreground group-hover:text-primary transition-colors">
             {t('nav.logo')}
           </span>
           <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-        </a>
+        </Link>
 
         {/* Right side: Language toggle + CTA */}
         <div className="flex items-center gap-3">
