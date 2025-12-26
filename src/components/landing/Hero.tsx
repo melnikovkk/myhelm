@@ -67,7 +67,7 @@ const Hero = () => {
     setSelectedIndustry(null);
   };
 
-  const showSimulator = ['ARTIFACTS', 'RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
+  const showSimulator = ['LAUNCHING', 'ARTIFACTS', 'RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
   const showWizard = state === 'EMPTY' && !prompt;
 
   return (
