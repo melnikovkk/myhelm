@@ -1,4 +1,3 @@
-import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKey } from '@/lib/translations';
 import {
@@ -21,11 +20,11 @@ const FAQ_ITEMS = [
   { q: 'faq.q9', a: 'faq.a9' },
 ] as const;
 
-const FAQ = forwardRef<HTMLElement>((_, ref) => {
+const FAQ = () => {
   const { t } = useLanguage();
 
   return (
-    <section ref={ref} className="py-20 md:py-32">
+    <section className="py-20 md:py-32">
       <div className="container mx-auto px-4">
         <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
           {t('faq.title')}
@@ -35,8 +34,8 @@ const FAQ = forwardRef<HTMLElement>((_, ref) => {
         <div className="max-w-2xl mx-auto">
           <Accordion type="single" collapsible className="space-y-3">
             {FAQ_ITEMS.map(({ q, a }, i) => (
-              <AccordionItem 
-                key={i} 
+              <AccordionItem
+                key={i}
                 value={`item-${i}`}
                 className="glass-card border-border/50 rounded-lg px-6 data-[state=open]:border-primary/30"
               >
@@ -53,8 +52,6 @@ const FAQ = forwardRef<HTMLElement>((_, ref) => {
       </div>
     </section>
   );
-});
-
-FAQ.displayName = 'FAQ';
+};
 
 export default FAQ;
