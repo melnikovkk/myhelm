@@ -395,11 +395,13 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
             decisionMade={decisionMade}
             evidenceRevealed={evidenceRevealed}
             onScrub={handleScrub}
+            region={region}
+            industry={industry}
           />
         </TabsContent>
 
         <TabsContent value="reality" className="mt-0">
-          <RealityTab prompt={prompt} />
+          <RealityTab prompt={prompt} region={region} industry={industry} />
         </TabsContent>
 
         <TabsContent value="region" className="mt-0">
