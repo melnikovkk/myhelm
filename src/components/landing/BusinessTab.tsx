@@ -20,7 +20,8 @@ import {
   CreditCard,
   FileSpreadsheet,
   Shield,
-  AlertCircle
+  AlertCircle,
+  Sparkles
 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import RunHUD from './RunHUD';
@@ -303,36 +304,65 @@ const BusinessTab = ({
               </div>
             </div>
 
-            {/* Evidence Trophies */}
+            {/* Evidence Trophies - Enhanced Display */}
             {evidenceRevealed.length > 0 && (
               <div className="pt-3 border-t border-border/50">
-                <div className="flex items-center gap-2 mb-2">
-                  <Trophy className="w-4 h-4 text-accent" />
-                  <span className="text-xs text-muted-foreground font-medium">{t('artifact.launch.evidence')}:</span>
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-accent" />
+                    <span className="text-xs text-muted-foreground font-medium">{t('artifact.launch.evidence')}:</span>
+                  </div>
+                  <div className="flex items-center gap-1 text-xs font-mono text-success bg-success/10 px-2 py-0.5 rounded">
+                    <span>{evidenceRevealed.length}/3</span>
+                  </div>
                 </div>
                 <div className="space-y-2">
                   {evidenceRevealed.includes(0) && (
-                    <div className={`trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-3 py-2 rounded-lg border border-success/20 ${isReplay ? getFogClass(87.5) : ''}`}>
-                      <Camera className="w-4 h-4 text-success" />
-                      <span className="flex-1 text-xs">{t('evidence.booking')}</span>
-                      <span className="text-xs text-success font-medium">+1</span>
+                    <div className={`trophy-celebrate flex items-center gap-3 text-foreground bg-gradient-to-r from-success/15 to-success/5 px-3 py-2.5 rounded-lg border border-success/30 ${isReplay ? getFogClass(87.5) : ''}`}>
+                      <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center shrink-0">
+                        <Camera className="w-4 h-4 text-success" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-medium block truncate">{t('evidence.booking')}</span>
+                        <span className="text-[10px] text-muted-foreground">16:30</span>
+                      </div>
+                      <span className="text-xs text-success font-bold bg-success/20 px-2 py-0.5 rounded">+1</span>
                     </div>
                   )}
                   {evidenceRevealed.includes(1) && (
-                    <div className={`trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-3 py-2 rounded-lg border border-success/20 ${isReplay ? getFogClass(93) : ''}`}>
-                      <CheckCircle className="w-4 h-4 text-success" />
-                      <span className="flex-1 text-xs">{t('evidence.verified')}</span>
-                      <span className="text-xs text-success font-medium">+1</span>
+                    <div className={`trophy-celebrate flex items-center gap-3 text-foreground bg-gradient-to-r from-success/15 to-success/5 px-3 py-2.5 rounded-lg border border-success/30 ${isReplay ? getFogClass(93) : ''}`} style={{ animationDelay: '100ms' }}>
+                      <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center shrink-0">
+                        <CheckCircle className="w-4 h-4 text-success" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-medium block truncate">{t('evidence.verified')}</span>
+                        <span className="text-[10px] text-muted-foreground">16:45</span>
+                      </div>
+                      <span className="text-xs text-success font-bold bg-success/20 px-2 py-0.5 rounded">+1</span>
                     </div>
                   )}
                   {evidenceRevealed.includes(2) && (
-                    <div className={`trophy-enter flex items-center gap-2 text-foreground bg-success/10 px-3 py-2 rounded-lg border border-success/20 ${isReplay ? getFogClass(100) : ''}`}>
-                      <Receipt className="w-4 h-4 text-success" />
-                      <span className="flex-1 text-xs">{t('evidence.payment')}</span>
-                      <span className="text-xs text-success font-medium">+1</span>
+                    <div className={`trophy-celebrate flex items-center gap-3 text-foreground bg-gradient-to-r from-success/15 to-success/5 px-3 py-2.5 rounded-lg border border-success/30 ${isReplay ? getFogClass(100) : ''}`} style={{ animationDelay: '200ms' }}>
+                      <div className="w-8 h-8 rounded-full bg-success/20 flex items-center justify-center shrink-0">
+                        <Receipt className="w-4 h-4 text-success" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <span className="text-xs font-medium block truncate">{t('evidence.payment')}</span>
+                        <span className="text-[10px] text-muted-foreground">17:00</span>
+                      </div>
+                      <span className="text-xs text-success font-bold bg-success/20 px-2 py-0.5 rounded">+1</span>
                     </div>
                   )}
                 </div>
+                
+                {/* Completion message */}
+                {evidenceRevealed.length === 3 && (
+                  <div className="mt-3 p-2 bg-accent/10 border border-accent/20 rounded-lg text-center animate-fade-in">
+                    <p className="text-xs font-medium text-accent">
+                      {language === 'ru' ? '✨ Все доказательства собраны!' : '✨ All proof collected!'}
+                    </p>
+                  </div>
+                )}
               </div>
             )}
           </div>
