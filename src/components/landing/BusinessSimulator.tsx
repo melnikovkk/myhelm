@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { Play, RotateCcw, Loader2, Globe } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
@@ -260,21 +261,78 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
   if (state === 'LAUNCHING' || isGenerating) {
     return (
       <div className="mt-8 animate-fade-in">
-        <div className="glass-card p-8 flex flex-col items-center justify-center min-h-[300px]">
-          <div className="relative">
-            <div className="w-20 h-20 rounded-full bg-primary/10 flex items-center justify-center">
-              <Loader2 className="w-10 h-10 text-primary animate-spin" />
-            </div>
-            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+        <div className="glass-card p-6 md:p-8">
+          {/* Tabs skeleton */}
+          <div className="w-full grid grid-cols-3 bg-secondary/30 rounded-xl p-1 mb-6">
+            <Skeleton className="h-9 rounded-lg" />
+            <Skeleton className="h-9 rounded-lg" />
+            <Skeleton className="h-9 rounded-lg" />
           </div>
-          <h3 className="mt-6 text-lg font-semibold text-foreground">
-            {language === 'ru' ? 'Создаём ваш бизнес...' : 'Building your business...'}
-          </h3>
-          <p className="mt-2 text-sm text-muted-foreground max-w-md text-center">
-            {language === 'ru' 
-              ? 'AI анализирует промпт и генерирует план, структуру и операционную систему'
-              : 'AI is analyzing your prompt and generating the plan, structure, and operating system'}
-          </p>
+
+          {/* Business name skeleton */}
+          <div className="flex items-center gap-3 mb-6">
+            <Skeleton className="w-12 h-12 rounded-xl" />
+            <div className="flex-1 space-y-2">
+              <Skeleton className="h-6 w-48" />
+              <Skeleton className="h-4 w-64" />
+            </div>
+          </div>
+
+          {/* Content cards skeleton */}
+          <div className="grid md:grid-cols-2 gap-4 mb-6">
+            {/* Packages card */}
+            <div className="p-4 rounded-lg bg-secondary/20 border border-border/30 space-y-3">
+              <Skeleton className="h-5 w-24" />
+              <div className="space-y-2">
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-32" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-28" />
+                  <Skeleton className="h-4 w-20" />
+                </div>
+                <div className="flex justify-between">
+                  <Skeleton className="h-4 w-36" />
+                  <Skeleton className="h-4 w-16" />
+                </div>
+              </div>
+            </div>
+
+            {/* Loops card */}
+            <div className="p-4 rounded-lg bg-secondary/20 border border-border/30 space-y-3">
+              <Skeleton className="h-5 w-28" />
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-4/5" />
+                <Skeleton className="h-4 w-full" />
+              </div>
+            </div>
+          </div>
+
+          {/* Loading indicator */}
+          <div className="flex flex-col items-center justify-center py-6">
+            <div className="relative">
+              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
+                <Loader2 className="w-8 h-8 text-primary animate-spin" />
+              </div>
+              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+            </div>
+            <h3 className="mt-4 text-lg font-semibold text-foreground">
+              {language === 'ru' ? 'Создаём ваш бизнес...' : 'Building your business...'}
+            </h3>
+            <p className="mt-2 text-sm text-muted-foreground max-w-md text-center">
+              {language === 'ru' 
+                ? 'AI анализирует промпт и генерирует план, структуру и операционную систему'
+                : 'AI is analyzing your prompt and generating the plan, structure, and operating system'}
+            </p>
+          </div>
+
+          {/* Action button skeleton */}
+          <div className="flex justify-center mt-4">
+            <Skeleton className="h-10 w-40 rounded-xl" />
+          </div>
         </div>
       </div>
     );
