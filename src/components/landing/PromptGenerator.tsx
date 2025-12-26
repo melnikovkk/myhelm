@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
 import { 
   Sparkles, 
   Loader2, 
@@ -430,16 +431,39 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon, region, industry }: Pr
 
       {/* Step 4: Generating */}
       {step === 'generating' && (
-        <div className="flex flex-col items-center justify-center py-10 animate-fade-in">
+        <div className="space-y-4 animate-fade-in">
+          {/* Skeleton structure mimicking ready state */}
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <div className="p-4 bg-gradient-to-br from-secondary/60 to-secondary/30 rounded-xl border border-border/30">
+              <div className="space-y-2">
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-5/6" />
+                <Skeleton className="h-4 w-4/5" />
+                <Skeleton className="h-4 w-full" />
+                <Skeleton className="h-4 w-3/4" />
+              </div>
             </div>
-            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
           </div>
-          <p className="mt-6 text-sm text-muted-foreground">
-            {language === 'ru' ? 'Создаём идеальный промпт...' : 'Crafting your perfect prompt...'}
-          </p>
+          
+          {/* Loading indicator */}
+          <div className="flex items-center justify-center gap-3 py-4">
+            <div className="relative">
+              <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
+                <Loader2 className="w-5 h-5 text-primary animate-spin" />
+              </div>
+              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {language === 'ru' ? 'Создаём идеальный промпт...' : 'Crafting your perfect prompt...'}
+            </p>
+          </div>
+          
+          {/* Skeleton buttons */}
+          <div className="flex gap-2">
+            <Skeleton className="h-9 w-20 rounded-lg" />
+            <Skeleton className="h-9 w-20 rounded-lg" />
+            <Skeleton className="h-9 flex-1 rounded-lg" />
+          </div>
         </div>
       )}
 
