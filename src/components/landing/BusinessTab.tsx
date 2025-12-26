@@ -21,10 +21,13 @@ import {
   FileSpreadsheet,
   Shield,
   AlertCircle,
-  Sparkles
+  Sparkles,
+  Globe,
+  Briefcase
 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import RunHUD from './RunHUD';
+import { RegionConfig, IndustryConfig } from '@/lib/regionData';
 
 // Timeline events
 const TIMELINE_EVENTS = [
@@ -46,6 +49,8 @@ interface BusinessTabProps {
   decisionMade: 'approve' | 'deny' | 'photo' | null;
   evidenceRevealed: number[];
   onScrub: (progress: number) => void;
+  region?: RegionConfig | null;
+  industry?: IndustryConfig | null;
 }
 
 const BusinessTab = ({ 
@@ -55,7 +60,9 @@ const BusinessTab = ({
   currentEventIndex,
   decisionMade,
   evidenceRevealed,
-  onScrub 
+  onScrub,
+  region,
+  industry
 }: BusinessTabProps) => {
   const { t, language } = useLanguage();
   const showTimeline = ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
@@ -118,13 +125,32 @@ const BusinessTab = ({
 
   return (
     <div className="space-y-6">
-      {/* Business Header with Name & Tagline */}
+      {/* Business Header with Name & Tagline + Region/Industry context */}
       <div className="glass-card p-4 md:p-6 rounded-xl border-primary/20 animate-fade-in">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h2 className="text-xl md:text-2xl font-bold text-foreground">{data.name}</h2>
             {data.tagline && (
               <p className="text-sm text-muted-foreground mt-1">{data.tagline}</p>
+            )}
+            {/* Region and Industry badges */}
+            {(region || industry) && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {region && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded-full">
+                    <Globe className="w-3 h-3" />
+                    {language === 'ru' ? region.nameRu : region.nameEn}
+                    <span className="text-primary/60">•</span>
+                    <span className="font-mono">{region.currencySymbol}</span>
+                  </span>
+                )}
+                {industry && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-accent/10 text-accent text-xs rounded-full">
+                    <Briefcase className="w-3 h-3" />
+                    {language === 'ru' ? industry.labelRu : industry.labelEn}
+                  </span>
+                )}
+              </div>
             )}
           </div>
           <div className="flex items-center gap-2 text-sm">

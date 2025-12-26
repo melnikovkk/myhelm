@@ -13,7 +13,9 @@ import {
   AlertCircle,
   CheckCircle,
   Play,
-  Pause
+  Pause,
+  MapPin,
+  Briefcase
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -23,9 +25,12 @@ import {
   getCachedReality,
   setCachedReality
 } from '@/lib/storage';
+import { RegionConfig, IndustryConfig } from '@/lib/regionData';
 
 interface RealityTabProps {
   prompt: string;
+  region?: RegionConfig | null;
+  industry?: IndustryConfig | null;
 }
 
 interface MarketData {
@@ -40,7 +45,7 @@ interface CompetitorData {
   positioning?: string;
 }
 
-const RealityTab = ({ prompt }: RealityTabProps) => {
+const RealityTab = ({ prompt, region, industry }: RealityTabProps) => {
   const { t, language } = useLanguage();
   const [isFetchingMarket, setIsFetchingMarket] = useState(false);
   const [isFetchingCompetitor, setIsFetchingCompetitor] = useState(false);
@@ -59,10 +64,29 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
   const remaining = getRealityRemaining();
   const canFetch = canUseReality();
 
-  // Extract business type and city from prompt
-  const extractBusinessInfo = () => {
+  // Get business info from region/industry context or extract from prompt
+  const getBusinessInfo = () => {
+    const regionName = region 
+      ? (language === 'ru' ? region.nameRu : region.nameEn) 
+      : null;
+    const industryName = industry 
+      ? (language === 'ru' ? industry.labelRu : industry.labelEn) 
+      : null;
+    
+    // If we have context, use it
+    if (regionName || industryName) {
+      return { 
+        businessType: industryName || (language === 'ru' ? 'услуги' : 'service'),
+        city: regionName || 'Berlin',
+        regionCode: region?.code,
+        currency: region?.currency,
+        industryKey: industry?.key,
+      };
+    }
+    
+    // Fallback: extract from prompt
     const words = prompt.toLowerCase();
-    let businessType = 'cleaning';
+    let businessType = language === 'ru' ? 'услуги' : 'service';
     let city = 'Berlin';
     
     if (words.includes('клининг') || words.includes('уборк') || words.includes('cleaning')) {
@@ -77,7 +101,7 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
       city = language === 'ru' ? 'Москва' : 'Moscow';
     }
     
-    return { businessType, city };
+    return { businessType, city, regionCode: undefined, currency: undefined, industryKey: undefined };
   };
 
   const handleFetchReality = async () => {
@@ -95,10 +119,17 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
     setMarketError(null);
     
     try {
-      const { businessType, city } = extractBusinessInfo();
+      const { businessType, city, regionCode, currency, industryKey } = getBusinessInfo();
       
       const { data, error } = await supabase.functions.invoke('market-snapshot', {
-        body: { businessType, city, locale: language },
+        body: { 
+          businessType, 
+          city, 
+          locale: language,
+          regionCode,
+          currency,
+          industryKey,
+        },
       });
       
       if (error) throw error;
@@ -235,6 +266,23 @@ const RealityTab = ({ prompt }: RealityTabProps) => {
             <p className="text-xs text-muted-foreground mt-1">
               {t('reality.note')}
             </p>
+            {/* Show selected region/industry context */}
+            {(region || industry) && (
+              <div className="flex flex-wrap gap-2 mt-2">
+                {region && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-primary/10 text-primary text-xs rounded">
+                    <MapPin className="w-3 h-3" />
+                    {language === 'ru' ? region.nameRu : region.nameEn}
+                  </span>
+                )}
+                {industry && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-accent/10 text-accent text-xs rounded">
+                    <Briefcase className="w-3 h-3" />
+                    {language === 'ru' ? industry.labelRu : industry.labelEn}
+                  </span>
+                )}
+              </div>
+            )}
           </div>
           
           <div className="flex items-center gap-3">
