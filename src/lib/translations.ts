@@ -41,9 +41,9 @@ export const translations = {
     en: 'Business',
     ru: 'Бизнес',
   },
-  'tab.reality': {
-    en: 'Reality',
-    ru: 'Реальность',
+  'tab.region': {
+    en: 'Region',
+    ru: 'Регион',
   },
   'tab.coverage': {
     en: 'Coverage',
@@ -471,6 +471,39 @@ export const translations = {
   'faq.a5': {
     en: 'HELM covers 8 business domains. Some capabilities are ready now, others are planned, and complex edge cases use a human-bridge until automated. We are transparent about what is available today.',
     ru: 'HELM покрывает 8 бизнес-доменов. Некоторые возможности готовы сейчас, другие запланированы, а сложные случаи используют human-bridge до автоматизации. Мы прозрачны о том, что доступно сегодня.',
+  },
+  // Global FAQ questions
+  'faq.q6': {
+    en: 'How does this work in my country?',
+    ru: 'Как это работает в моей стране?',
+  },
+  'faq.a6': {
+    en: 'HELM adapts to your region via Jurisdiction Packs — local overlays that configure invoices, taxes, payments, privacy, and payroll rules. Select your country in the demo to see what\'s Ready, Planned, or Human-bridge for your region.',
+    ru: 'HELM адаптируется к вашему региону через Юрисдикционные пакеты — локальные настройки счетов, налогов, платежей, приватности и выплат. Выбери страну в демо, чтобы увидеть что Готово, Планируется или через Human-bridge для твоего региона.',
+  },
+  'faq.q7': {
+    en: 'How do taxes and invoices change per region?',
+    ru: 'Как налоги и счета меняются по регионам?',
+  },
+  'faq.a7': {
+    en: 'Each region has specific VAT rates, invoice formats, and e-invoicing requirements. HELM generates compliant invoices automatically — you choose the tax regime and approve exceptions. All documents are archived with timestamps.',
+    ru: 'У каждого региона свои ставки НДС, форматы счетов и требования к e-invoicing. HELM генерирует соответствующие счета автоматически — вы выбираете налоговый режим и одобряете исключения. Все документы архивируются с метками времени.',
+  },
+  'faq.q8': {
+    en: 'Can I run offline and online business together?',
+    ru: 'Можно ли вести офлайн и онлайн бизнес вместе?',
+  },
+  'faq.a8': {
+    en: 'Yes. HELM runs hybrid businesses — online bookings, physical delivery, digital payments. The Business Program adapts to your channels and syncs everything into one operating system.',
+    ru: 'Да. HELM ведёт гибридный бизнес — онлайн бронирования, физическая доставка, цифровые платежи. Бизнес-Программа адаптируется к вашим каналам и синхронизирует всё в одну операционную систему.',
+  },
+  'faq.q9': {
+    en: 'What\'s ready now vs planned vs human-bridge?',
+    ru: 'Что готово сейчас vs планируется vs human-bridge?',
+  },
+  'faq.a9': {
+    en: 'Ready = fully automated, works today. Planned = in development, ETA shown. Human-bridge = complex edge cases handled by humans until automated. We\'re transparent about readiness for every capability in every region.',
+    ru: 'Готово = полностью автоматизировано, работает сегодня. Планируется = в разработке, показан срок. Human-bridge = сложные случаи обрабатываются людьми до автоматизации. Мы прозрачны о готовности каждой функции в каждом регионе.',
   },
 
   // Footer - CORRECTED POSITIONING
