@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKey } from '@/lib/translations';
 import { 
@@ -115,12 +116,12 @@ const DOMAIN_DETAILS_RU: Record<string, { runs: string[]; decides: string; proof
   },
 };
 
-const CoverageTab = () => {
+const CoverageTab = forwardRef<HTMLDivElement>((_, ref) => {
   const { t, language } = useLanguage();
   const details = language === 'ru' ? DOMAIN_DETAILS_RU : DOMAIN_DETAILS;
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Header with diagram */}
       <div className="text-center mb-8">
         <div className="relative w-full max-w-md mx-auto mb-6">
@@ -204,6 +205,8 @@ const CoverageTab = () => {
       </div>
     </div>
   );
-};
+});
+
+CoverageTab.displayName = 'CoverageTab';
 
 export default CoverageTab;

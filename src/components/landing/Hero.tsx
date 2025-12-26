@@ -104,68 +104,67 @@ const Hero = () => {
         </div>
 
         <div className="max-w-2xl mx-auto">
-          {/* Main Demo Card */}
-          <div className="glass-card p-6 md:p-8 rounded-2xl border-primary/10 shadow-2xl opacity-0 animate-scale-in relative overflow-hidden" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
-            {/* Subtle glow effect */}
-            <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-primary/5 rounded-full blur-3xl pointer-events-none" />
-            
-            <div className="relative z-10">
-              {/* Wizard Mode: Show prompt generator */}
-              {showWizard && (
-                <PromptGenerator 
-                  onPromptGenerated={handlePromptGenerated}
-                  onUseCanon={handleUseCanon}
-                />
-              )}
+          {/* Main Demo Card - Only show when in wizard or editing */}
+          {(showWizard || (prompt && !showSimulator)) && (
+            <div className="glass-card p-6 md:p-8 rounded-2xl border-primary/10 shadow-2xl opacity-0 animate-scale-in relative overflow-hidden" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
+              {/* Subtle glow effect */}
+              <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-primary/5 rounded-full blur-3xl pointer-events-none" />
+              
+              <div className="relative z-10">
+                {/* Wizard Mode: Show prompt generator */}
+                {showWizard && (
+                  <PromptGenerator 
+                    onPromptGenerated={handlePromptGenerated}
+                    onUseCanon={handleUseCanon}
+                  />
+                )}
 
-              {/* Prompt Ready: Show prompt with launch button */}
-              {!showWizard && (
-                <>
-                  {/* Context badges */}
-                  {(selectedRegion || selectedIndustry) && (
-                    <div className="flex flex-wrap items-center gap-2 mb-4">
-                      {selectedRegion && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                          {language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn}
-                          <span className="opacity-60">•</span>
-                          <span className="font-mono">{selectedRegion.currencySymbol}</span>
+                {/* Prompt Ready: Show prompt with launch button */}
+                {!showWizard && (
+                  <>
+                    {/* Context badges */}
+                    {(selectedRegion || selectedIndustry) && (
+                      <div className="flex flex-wrap items-center gap-2 mb-4">
+                        {selectedRegion && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                            {language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn}
+                            <span className="opacity-60">•</span>
+                            <span className="font-mono">{selectedRegion.currencySymbol}</span>
+                          </span>
+                        )}
+                        {selectedIndustry && (
+                          <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full">
+                            {language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn}
+                          </span>
+                        )}
+                        <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                          demoMode === 'digitize' 
+                            ? 'bg-accent/10 text-accent' 
+                            : 'bg-success/10 text-success'
+                        }`}>
+                          {demoMode === 'digitize' 
+                            ? (language === 'ru' ? 'Оцифровка' : 'Digitize')
+                            : (language === 'ru' ? 'С нуля' : 'From Zero')
+                          }
                         </span>
-                      )}
-                      {selectedIndustry && (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full">
-                          {language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn}
-                        </span>
-                      )}
-                      <span className={`px-2 py-0.5 text-xs font-medium rounded ${
-                        demoMode === 'digitize' 
-                          ? 'bg-accent/10 text-accent' 
-                          : 'bg-success/10 text-success'
-                      }`}>
-                        {demoMode === 'digitize' 
-                          ? (language === 'ru' ? 'Оцифровка' : 'Digitize')
-                          : (language === 'ru' ? 'С нуля' : 'From Zero')
-                        }
-                      </span>
-                    </div>
-                  )}
+                      </div>
+                    )}
 
-                  {isEditing ? (
-                    <div className="mb-6">
-                      <Textarea
-                        value={prompt}
-                        onChange={(e) => handlePromptChange(e.target.value)}
-                        placeholder={t('hero.prompt.placeholder')}
-                        className="min-h-[140px] bg-background/60 border-border/50 focus:border-primary/50 resize-none text-base rounded-xl"
-                        disabled={state === 'LAUNCHING'}
-                      />
-                    </div>
-                  ) : (
-                    <div className="mb-6">
-                      <div className="relative p-5 bg-gradient-to-br from-secondary/80 to-secondary/40 rounded-xl border border-border/50 group hover:border-primary/30 transition-all duration-300">
-                        <p className="text-base text-foreground leading-relaxed pr-10">
-                          {prompt}
-                        </p>
-                        {state !== 'LAUNCHING' && (
+                    {isEditing ? (
+                      <div className="mb-6">
+                        <Textarea
+                          value={prompt}
+                          onChange={(e) => handlePromptChange(e.target.value)}
+                          placeholder={t('hero.prompt.placeholder')}
+                          className="min-h-[140px] bg-background/60 border-border/50 focus:border-primary/50 resize-none text-base rounded-xl"
+                        />
+                      </div>
+                    ) : (
+                      <div className="mb-6">
+                        <div className="relative p-5 bg-gradient-to-br from-secondary/80 to-secondary/40 rounded-xl border border-border/50 group hover:border-primary/30 transition-all duration-300">
+                          <p className="text-base text-foreground leading-relaxed pr-10">
+                            {prompt}
+                          </p>
                           <button
                             onClick={() => setIsEditing(true)}
                             className="absolute top-4 right-4 p-2.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-lg transition-all opacity-60 group-hover:opacity-100"
@@ -173,60 +172,51 @@ const Hero = () => {
                           >
                             <Pencil className="w-4 h-4" />
                           </button>
-                        )}
+                        </div>
+                        
+                        <div className="flex items-center justify-between mt-4">
+                          <button 
+                            onClick={handleStartOver}
+                            className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 py-1.5 px-3 rounded-lg hover:bg-primary/5"
+                          >
+                            <RotateCcw className="w-4 h-4" />
+                            {language === 'ru' ? 'Начать заново' : 'Start over'}
+                          </button>
+                          <span className={`text-xs font-mono px-3 py-1 rounded-lg ${prompt.length >= 10 ? 'text-success bg-success/10 border border-success/20' : 'text-muted-foreground bg-muted'}`}>
+                            {prompt.length >= 10 ? '✓ Ready' : `${prompt.length}/10`}
+                          </span>
+                        </div>
                       </div>
-                      
-                      <div className="flex items-center justify-between mt-4">
-                        <button 
-                          onClick={handleStartOver}
-                          className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 py-1.5 px-3 rounded-lg hover:bg-primary/5"
-                        >
-                          <RotateCcw className="w-4 h-4" />
-                          {language === 'ru' ? 'Начать заново' : 'Start over'}
-                        </button>
-                        <span className={`text-xs font-mono px-3 py-1 rounded-lg ${prompt.length >= 10 ? 'text-success bg-success/10 border border-success/20' : 'text-muted-foreground bg-muted'}`}>
-                          {prompt.length >= 10 ? '✓ Ready' : `${prompt.length}/10`}
+                    )}
+
+                    {/* Launch Button */}
+                    <Button
+                      onClick={handleLaunch}
+                      disabled={!isLaunchEnabled}
+                      size="lg"
+                      className={`w-full gap-3 text-lg font-semibold transition-all duration-300 rounded-xl h-14 ${
+                        isLaunchEnabled 
+                          ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-[1.02]' 
+                          : 'bg-muted text-muted-foreground'
+                      }`}
+                    >
+                      <Play className="w-5 h-5" />
+                      {t('hero.launch')}
+                      <ArrowRight className="w-5 h-5" />
+                    </Button>
+
+                    {isEditing && (
+                      <div className="mt-4 flex justify-end">
+                        <span className={`text-xs font-mono px-3 py-1 rounded-lg ${prompt.length >= 10 ? 'text-success bg-success/10' : 'text-muted-foreground bg-muted'}`}>
+                          {prompt.length}/10+
                         </span>
                       </div>
-                    </div>
-                  )}
-
-                  {/* Launch Button */}
-                  <Button
-                    onClick={handleLaunch}
-                    disabled={!isLaunchEnabled || state === 'LAUNCHING'}
-                    size="lg"
-                    className={`w-full gap-3 text-lg font-semibold transition-all duration-300 rounded-xl h-14 ${
-                      isLaunchEnabled && state !== 'LAUNCHING' 
-                        ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/30 hover:shadow-primary/40 hover:scale-[1.02]' 
-                        : 'bg-muted text-muted-foreground'
-                    }`}
-                  >
-                    {state === 'LAUNCHING' ? (
-                      <>
-                        <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" />
-                        {t('hero.launching')}
-                      </>
-                    ) : (
-                      <>
-                        <Play className="w-5 h-5" />
-                        {t('hero.launch')}
-                        <ArrowRight className="w-5 h-5" />
-                      </>
                     )}
-                  </Button>
-
-                  {isEditing && (
-                    <div className="mt-4 flex justify-end">
-                      <span className={`text-xs font-mono px-3 py-1 rounded-lg ${prompt.length >= 10 ? 'text-success bg-success/10' : 'text-muted-foreground bg-muted'}`}>
-                        {prompt.length}/10+
-                      </span>
-                    </div>
-                  )}
-                </>
-              )}
+                  </>
+                )}
+              </div>
             </div>
-          </div>
+          )}
 
           {/* Simulator */}
           {showSimulator && (

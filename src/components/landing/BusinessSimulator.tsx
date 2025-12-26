@@ -261,14 +261,30 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
               }
             </h3>
             
-            <p className="mt-2 text-muted-foreground text-center max-w-sm">
+            {/* Show context */}
+            {(region || industry) && (
+              <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
+                {industry && (
+                  <span className="px-2.5 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full">
+                    {language === 'ru' ? industry.labelRu : industry.labelEn}
+                  </span>
+                )}
+                {region && (
+                  <span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                    {language === 'ru' ? region.nameRu : region.nameEn}
+                  </span>
+                )}
+              </div>
+            )}
+            
+            <p className="mt-3 text-muted-foreground text-center max-w-sm text-sm">
               {language === 'ru' 
                 ? 'AI генерирует структуру, процессы и операционную систему'
                 : 'AI is generating structure, processes, and operating system'}
             </p>
 
             {/* Progress steps */}
-            <div className="mt-8 flex items-center gap-3">
+            <div className="mt-6 flex items-center gap-3">
               <div className="flex items-center gap-2">
                 <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
                 <span className="text-xs text-muted-foreground">

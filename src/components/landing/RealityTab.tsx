@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,7 +45,7 @@ interface CompetitorData {
   positioning?: string;
 }
 
-const RealityTab = ({ prompt, region, industry }: RealityTabProps) => {
+const RealityTab = forwardRef<HTMLDivElement, RealityTabProps>(({ prompt, region, industry }, ref) => {
   const { t, language } = useLanguage();
   const [isFetchingMarket, setIsFetchingMarket] = useState(false);
   const [isFetchingCompetitor, setIsFetchingCompetitor] = useState(false);
@@ -254,7 +254,7 @@ const RealityTab = ({ prompt, region, industry }: RealityTabProps) => {
   };
 
   return (
-    <div className="space-y-6">
+    <div ref={ref} className="space-y-6">
       {/* Fetch Reality Button */}
       <div className="glass-card p-5">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-4">
@@ -503,6 +503,8 @@ const RealityTab = ({ prompt, region, industry }: RealityTabProps) => {
       </div>
     </div>
   );
-};
+});
+
+RealityTab.displayName = 'RealityTab';
 
 export default RealityTab;
