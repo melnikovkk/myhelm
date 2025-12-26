@@ -32,7 +32,7 @@ interface MarketSnapshot {
 }
 
 interface PromptGeneratorProps {
-  onPromptGenerated: (prompt: string, marketData?: MarketSnapshot) => void;
+  onPromptGenerated: (prompt: string, marketData?: MarketSnapshot, mode?: 'zero' | 'digitize') => void;
   onUseCanon: () => void;
   region?: RegionConfig | null;
   industry?: IndustryConfig | null;
@@ -172,7 +172,7 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon, region, industry }: Pr
   };
 
   const handleConfirmPrompt = () => {
-    onPromptGenerated(generatedPrompt, marketData || undefined);
+    onPromptGenerated(generatedPrompt, marketData || undefined, mode || 'zero');
   };
 
   const handleRegenerate = async () => {
