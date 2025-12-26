@@ -79,12 +79,15 @@ const Hero = () => {
     setMarketData(null);
   };
 
-  const handlePromptGenerated = (generatedPrompt: string, data?: MarketSnapshot) => {
+  const handlePromptGenerated = (generatedPrompt: string, data?: MarketSnapshot, mode?: 'zero' | 'digitize') => {
     setPrompt(generatedPrompt);
     setShowWizard(false);
     setState('TYPED');
     if (data) {
       setMarketData(data);
+    }
+    if (mode) {
+      setDemoMode(mode);
     }
   };
 
@@ -305,6 +308,7 @@ const Hero = () => {
               onEditPrompt={handleEditPrompt}
               region={selectedRegion}
               industry={selectedIndustry}
+              mode={demoMode}
             />
           )}
         </div>
