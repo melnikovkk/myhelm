@@ -1,44 +1,30 @@
-import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useDemo } from '@/contexts/DemoContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Pencil, Play, ArrowRight, RotateCcw } from 'lucide-react';
-import BusinessSimulator, { SimulatorState } from './BusinessSimulator';
+import BusinessSimulator from './BusinessSimulator';
 import PromptGenerator from './PromptGenerator';
 import heroBg from '@/assets/hero-bg.jpg';
-import { RegionConfig, IndustryConfig } from '@/lib/regionData';
 
 const Hero = () => {
   const { t, language } = useLanguage();
-  const [prompt, setPrompt] = useState('');
-  const [state, setState] = useState<SimulatorState>('EMPTY');
-  const [isEditing, setIsEditing] = useState(false);
-  
-  // Context from wizard
-  const [selectedRegion, setSelectedRegion] = useState<RegionConfig | null>(null);
-  const [selectedIndustry, setSelectedIndustry] = useState<IndustryConfig | null>(null);
-  const [demoMode, setDemoMode] = useState<'zero' | 'digitize'>('zero');
-
-  const isLaunchEnabled = prompt.length >= 10;
+  const { 
+    state, 
+    showWizard, 
+    showSimulator, 
+    isLaunchEnabled,
+    actions 
+  } = useDemo();
 
   const handlePromptChange = (value: string) => {
-    setPrompt(value);
-    if (value.length >= 10 && state === 'EMPTY') {
-      setState('TYPED');
-    } else if (value.length < 10 && state === 'TYPED') {
-      setState('EMPTY');
-    }
+    actions.setPrompt(value, 'edited');
   };
 
   const handleLaunch = () => {
-    if (!isLaunchEnabled || state === 'LAUNCHING') return;
-    setIsEditing(false);
-    setState('LAUNCHING');
-  };
-
-  const handleEditPrompt = () => {
-    setState('TYPED');
-    setIsEditing(true);
+    if (!isLaunchEnabled || state.uiState === 'LAUNCHING') return;
+    actions.setEditing(false);
+    actions.launch();
   };
 
   const getCanonPrompt = () => {
@@ -46,29 +32,9 @@ const Hero = () => {
   };
 
   const handleUseCanon = () => {
-    setPrompt(getCanonPrompt());
-    setState('TYPED');
-    setDemoMode('zero');
+    actions.setPrompt(getCanonPrompt(), 'canon');
+    actions.setMode('zero');
   };
-
-  const handlePromptGenerated = (generatedPrompt: string, mode: 'zero' | 'digitize', region: RegionConfig, industry: IndustryConfig) => {
-    setPrompt(generatedPrompt);
-    setSelectedRegion(region);
-    setSelectedIndustry(industry);
-    setDemoMode(mode);
-    setState('TYPED');
-  };
-
-  const handleStartOver = () => {
-    setPrompt('');
-    setState('EMPTY');
-    setIsEditing(false);
-    setSelectedRegion(null);
-    setSelectedIndustry(null);
-  };
-
-  const showSimulator = ['LAUNCHING', 'ARTIFACTS', 'RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
-  const showWizard = state === 'EMPTY' && !prompt;
 
   return (
     <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden min-h-[90vh] flex items-center">
@@ -105,7 +71,7 @@ const Hero = () => {
 
         <div className="max-w-2xl mx-auto">
           {/* Main Demo Card - Only show when in wizard or editing */}
-          {(showWizard || (prompt && !showSimulator)) && (
+          {(showWizard || (state.prompt && !showSimulator)) && (
             <div className="glass-card p-6 md:p-8 rounded-2xl border-primary/10 shadow-2xl opacity-0 animate-scale-in relative overflow-hidden" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
               {/* Subtle glow effect */}
               <div className="absolute -top-1/2 -left-1/2 w-full h-full bg-primary/5 rounded-full blur-3xl pointer-events-none" />
@@ -114,7 +80,6 @@ const Hero = () => {
                 {/* Wizard Mode: Show prompt generator */}
                 {showWizard && (
                   <PromptGenerator 
-                    onPromptGenerated={handlePromptGenerated}
                     onUseCanon={handleUseCanon}
                   />
                 )}
@@ -123,26 +88,26 @@ const Hero = () => {
                 {!showWizard && (
                   <>
                     {/* Context badges */}
-                    {(selectedRegion || selectedIndustry) && (
+                    {(state.region || state.industry) && (
                       <div className="flex flex-wrap items-center gap-2 mb-4">
-                        {selectedRegion && (
+                        {state.region && (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
-                            {language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn}
+                            {language === 'ru' ? state.region.nameRu : state.region.nameEn}
                             <span className="opacity-60">•</span>
-                            <span className="font-mono">{selectedRegion.currencySymbol}</span>
+                            <span className="font-mono">{state.region.currencySymbol}</span>
                           </span>
                         )}
-                        {selectedIndustry && (
+                        {state.industry && (
                           <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full">
-                            {language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn}
+                            {language === 'ru' ? state.industry.labelRu : state.industry.labelEn}
                           </span>
                         )}
                         <span className={`px-2 py-0.5 text-xs font-medium rounded ${
-                          demoMode === 'digitize' 
+                          state.mode === 'digitize' 
                             ? 'bg-accent/10 text-accent' 
                             : 'bg-success/10 text-success'
                         }`}>
-                          {demoMode === 'digitize' 
+                          {state.mode === 'digitize' 
                             ? (language === 'ru' ? 'Оцифровка' : 'Digitize')
                             : (language === 'ru' ? 'С нуля' : 'From Zero')
                           }
@@ -150,10 +115,10 @@ const Hero = () => {
                       </div>
                     )}
 
-                    {isEditing ? (
+                    {state.isEditing ? (
                       <div className="mb-6">
                         <Textarea
-                          value={prompt}
+                          value={state.prompt}
                           onChange={(e) => handlePromptChange(e.target.value)}
                           placeholder={t('hero.prompt.placeholder')}
                           className="min-h-[140px] bg-background/60 border-border/50 focus:border-primary/50 resize-none text-base rounded-xl"
@@ -163,10 +128,10 @@ const Hero = () => {
                       <div className="mb-6">
                         <div className="relative p-5 bg-gradient-to-br from-secondary/80 to-secondary/40 rounded-xl border border-border/50 group hover:border-primary/30 transition-all duration-300">
                           <p className="text-base text-foreground leading-relaxed pr-10">
-                            {prompt}
+                            {state.prompt}
                           </p>
                           <button
-                            onClick={() => setIsEditing(true)}
+                            onClick={() => actions.setEditing(true)}
                             className="absolute top-4 right-4 p-2.5 text-muted-foreground hover:text-foreground hover:bg-secondary/80 rounded-lg transition-all opacity-60 group-hover:opacity-100"
                             title={language === 'ru' ? 'Редактировать' : 'Edit'}
                           >
@@ -176,14 +141,14 @@ const Hero = () => {
                         
                         <div className="flex items-center justify-between mt-4">
                           <button 
-                            onClick={handleStartOver}
+                            onClick={actions.startOver}
                             className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 py-1.5 px-3 rounded-lg hover:bg-primary/5"
                           >
                             <RotateCcw className="w-4 h-4" />
                             {language === 'ru' ? 'Начать заново' : 'Start over'}
                           </button>
-                          <span className={`text-xs font-mono px-3 py-1 rounded-lg ${prompt.length >= 10 ? 'text-success bg-success/10 border border-success/20' : 'text-muted-foreground bg-muted'}`}>
-                            {prompt.length >= 10 ? '✓ Ready' : `${prompt.length}/10`}
+                          <span className={`text-xs font-mono px-3 py-1 rounded-lg ${state.prompt.length >= 10 ? 'text-success bg-success/10 border border-success/20' : 'text-muted-foreground bg-muted'}`}>
+                            {state.prompt.length >= 10 ? '✓ Ready' : `${state.prompt.length}/10`}
                           </span>
                         </div>
                       </div>
@@ -205,10 +170,10 @@ const Hero = () => {
                       <ArrowRight className="w-5 h-5" />
                     </Button>
 
-                    {isEditing && (
+                    {state.isEditing && (
                       <div className="mt-4 flex justify-end">
-                        <span className={`text-xs font-mono px-3 py-1 rounded-lg ${prompt.length >= 10 ? 'text-success bg-success/10' : 'text-muted-foreground bg-muted'}`}>
-                          {prompt.length}/10+
+                        <span className={`text-xs font-mono px-3 py-1 rounded-lg ${state.prompt.length >= 10 ? 'text-success bg-success/10' : 'text-muted-foreground bg-muted'}`}>
+                          {state.prompt.length}/10+
                         </span>
                       </div>
                     )}
@@ -220,15 +185,7 @@ const Hero = () => {
 
           {/* Simulator */}
           {showSimulator && (
-            <BusinessSimulator 
-              state={state} 
-              setState={setState} 
-              prompt={prompt} 
-              onEditPrompt={handleEditPrompt}
-              region={selectedRegion}
-              industry={selectedIndustry}
-              mode={demoMode}
-            />
+            <BusinessSimulator />
           )}
         </div>
       </div>
