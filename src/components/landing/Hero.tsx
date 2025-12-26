@@ -1,50 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Rocket, Sparkles, Pencil, CheckCircle2, Globe, Briefcase, ChevronDown, ArrowRight, Play } from 'lucide-react';
+import { Sparkles, Pencil, Play, ArrowRight, RotateCcw } from 'lucide-react';
 import BusinessSimulator, { SimulatorState } from './BusinessSimulator';
 import PromptGenerator from './PromptGenerator';
 import heroBg from '@/assets/hero-bg.jpg';
-import { REGIONS, INDUSTRIES, RegionConfig, IndustryConfig } from '@/lib/regionData';
-
-interface MarketSnapshot {
-  bullets: string[];
-  sources: { title: string; url: string }[];
-}
-
-export interface DemoContext {
-  region: RegionConfig | null;
-  industry: IndustryConfig | null;
-  mode: 'zero' | 'digitize';
-}
+import { RegionConfig, IndustryConfig } from '@/lib/regionData';
 
 const Hero = () => {
   const { t, language } = useLanguage();
   const [prompt, setPrompt] = useState('');
   const [state, setState] = useState<SimulatorState>('EMPTY');
-  const [showWizard, setShowWizard] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
-  const [marketData, setMarketData] = useState<MarketSnapshot | null>(null);
   
-  // Region and Industry selectors
-  const [selectedRegion, setSelectedRegion] = useState<RegionConfig | null>(REGIONS.find(r => r.code === 'DE') || null);
-  const [selectedIndustry, setSelectedIndustry] = useState<IndustryConfig | null>(INDUSTRIES.find(i => i.key === 'service') || null);
+  // Context from wizard
+  const [selectedRegion, setSelectedRegion] = useState<RegionConfig | null>(null);
+  const [selectedIndustry, setSelectedIndustry] = useState<IndustryConfig | null>(null);
   const [demoMode, setDemoMode] = useState<'zero' | 'digitize'>('zero');
-  const [showRegionDropdown, setShowRegionDropdown] = useState(false);
-  const [showIndustryDropdown, setShowIndustryDropdown] = useState(false);
-
-  // Close dropdowns when clicking outside
-  useEffect(() => {
-    const handleClickOutside = () => {
-      setShowRegionDropdown(false);
-      setShowIndustryDropdown(false);
-    };
-    if (showRegionDropdown || showIndustryDropdown) {
-      document.addEventListener('click', handleClickOutside);
-      return () => document.removeEventListener('click', handleClickOutside);
-    }
-  }, [showRegionDropdown, showIndustryDropdown]);
 
   const isLaunchEnabled = prompt.length >= 10;
 
@@ -74,32 +47,28 @@ const Hero = () => {
 
   const handleUseCanon = () => {
     setPrompt(getCanonPrompt());
-    setShowWizard(false);
     setState('TYPED');
-    setMarketData(null);
+    setDemoMode('zero');
   };
 
-  const handlePromptGenerated = (generatedPrompt: string, data?: MarketSnapshot, mode?: 'zero' | 'digitize') => {
+  const handlePromptGenerated = (generatedPrompt: string, mode: 'zero' | 'digitize', region: RegionConfig, industry: IndustryConfig) => {
     setPrompt(generatedPrompt);
-    setShowWizard(false);
+    setSelectedRegion(region);
+    setSelectedIndustry(industry);
+    setDemoMode(mode);
     setState('TYPED');
-    if (data) {
-      setMarketData(data);
-    }
-    if (mode) {
-      setDemoMode(mode);
-    }
   };
 
   const handleStartOver = () => {
     setPrompt('');
     setState('EMPTY');
-    setShowWizard(true);
     setIsEditing(false);
-    setMarketData(null);
+    setSelectedRegion(null);
+    setSelectedIndustry(null);
   };
 
   const showSimulator = ['ARTIFACTS', 'RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
+  const showWizard = state === 'EMPTY' && !prompt;
 
   return (
     <section className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden min-h-[90vh] flex items-center">
@@ -135,66 +104,6 @@ const Hero = () => {
         </div>
 
         <div className="max-w-2xl mx-auto">
-          {/* Region & Industry Selectors - Only show before demo starts */}
-          {!showSimulator && (
-            <div className="flex flex-wrap items-center justify-center gap-3 mb-6 opacity-0 animate-fade-in relative z-[60]" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
-              {/* Region Selector */}
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={() => { setShowRegionDropdown(!showRegionDropdown); setShowIndustryDropdown(false); }}
-                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/80 backdrop-blur-sm border border-border/50 hover:border-primary/40 hover:bg-card transition-all duration-300 text-sm group focus-ring"
-                >
-                  <Globe className="w-4 h-4 text-primary group-hover:scale-110 transition-transform" />
-                  <span className="text-foreground font-medium">{selectedRegion ? (language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn) : (language === 'ru' ? 'Выбрать регион' : 'Select region')}</span>
-                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showRegionDropdown ? 'rotate-180' : ''}`} />
-                </button>
-                {showRegionDropdown && (
-                  <div className="absolute z-[70] top-full left-0 mt-2 w-64 max-h-72 overflow-y-auto bg-card border border-border rounded-xl shadow-2xl animate-scale-in">
-                    <div className="p-2">
-                      {REGIONS.map((region) => (
-                        <button
-                          key={region.code}
-                          onClick={() => { setSelectedRegion(region); setShowRegionDropdown(false); }}
-                          className={`w-full px-3 py-2.5 text-left text-sm rounded-lg transition-all duration-200 flex items-center justify-between ${selectedRegion?.code === region.code ? 'bg-primary/15 text-primary' : 'text-foreground hover:bg-secondary/50'}`}
-                        >
-                          <span className="font-medium">{language === 'ru' ? region.nameRu : region.nameEn}</span>
-                          <span className="text-xs text-muted-foreground bg-secondary/50 px-2 py-0.5 rounded">{region.currency}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Industry Selector */}
-              <div className="relative" onClick={(e) => e.stopPropagation()}>
-                <button
-                  onClick={() => { setShowIndustryDropdown(!showIndustryDropdown); setShowRegionDropdown(false); }}
-                  className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-card/80 backdrop-blur-sm border border-border/50 hover:border-accent/40 hover:bg-card transition-all duration-300 text-sm group focus-ring"
-                >
-                  <Briefcase className="w-4 h-4 text-accent group-hover:scale-110 transition-transform" />
-                  <span className="text-foreground font-medium">{selectedIndustry ? (language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn) : (language === 'ru' ? 'Выбрать отрасль' : 'Select industry')}</span>
-                  <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showIndustryDropdown ? 'rotate-180' : ''}`} />
-                </button>
-                {showIndustryDropdown && (
-                  <div className="absolute z-[70] top-full left-0 mt-2 w-56 bg-card border border-border rounded-xl shadow-2xl animate-scale-in">
-                    <div className="p-2">
-                      {INDUSTRIES.map((industry) => (
-                        <button
-                          key={industry.key}
-                          onClick={() => { setSelectedIndustry(industry); setShowIndustryDropdown(false); }}
-                          className={`w-full px-3 py-2.5 text-left text-sm rounded-lg transition-all duration-200 ${selectedIndustry?.key === industry.key ? 'bg-accent/15 text-accent' : 'text-foreground hover:bg-secondary/50'}`}
-                        >
-                          <span className="font-medium">{language === 'ru' ? industry.labelRu : industry.labelEn}</span>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-
           {/* Main Demo Card */}
           <div className="glass-card p-6 md:p-8 rounded-2xl border-primary/10 shadow-2xl opacity-0 animate-scale-in relative overflow-hidden" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
             {/* Subtle glow effect */}
@@ -202,18 +111,44 @@ const Hero = () => {
             
             <div className="relative z-10">
               {/* Wizard Mode: Show prompt generator */}
-              {showWizard && !prompt && (
+              {showWizard && (
                 <PromptGenerator 
                   onPromptGenerated={handlePromptGenerated}
                   onUseCanon={handleUseCanon}
-                  region={selectedRegion}
-                  industry={selectedIndustry}
                 />
               )}
 
               {/* Prompt Ready: Show prompt with launch button */}
-              {(!showWizard || prompt) && (
+              {!showWizard && (
                 <>
+                  {/* Context badges */}
+                  {(selectedRegion || selectedIndustry) && (
+                    <div className="flex flex-wrap items-center gap-2 mb-4">
+                      {selectedRegion && (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                          {language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn}
+                          <span className="opacity-60">•</span>
+                          <span className="font-mono">{selectedRegion.currencySymbol}</span>
+                        </span>
+                      )}
+                      {selectedIndustry && (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full">
+                          {language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn}
+                        </span>
+                      )}
+                      <span className={`px-2 py-0.5 text-xs font-medium rounded ${
+                        demoMode === 'digitize' 
+                          ? 'bg-accent/10 text-accent' 
+                          : 'bg-success/10 text-success'
+                      }`}>
+                        {demoMode === 'digitize' 
+                          ? (language === 'ru' ? 'Оцифровка' : 'Digitize')
+                          : (language === 'ru' ? 'С нуля' : 'From Zero')
+                        }
+                      </span>
+                    </div>
+                  )}
+
                   {isEditing ? (
                     <div className="mb-6">
                       <Textarea
@@ -241,21 +176,13 @@ const Hero = () => {
                         )}
                       </div>
                       
-                      {/* Market data indicator */}
-                      {marketData && (
-                        <div className="flex items-center gap-2 mt-3 text-xs text-accent bg-accent/10 px-3 py-2 rounded-lg">
-                          <CheckCircle2 className="w-4 h-4" />
-                          <span className="font-medium">{language === 'ru' ? 'Данные рынка загружены' : 'Market data loaded'}</span>
-                        </div>
-                      )}
-                      
                       <div className="flex items-center justify-between mt-4">
                         <button 
                           onClick={handleStartOver}
                           className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 py-1.5 px-3 rounded-lg hover:bg-primary/5"
                         >
-                          <Sparkles className="w-4 h-4" />
-                          {language === 'ru' ? 'Другой промпт' : 'Different prompt'}
+                          <RotateCcw className="w-4 h-4" />
+                          {language === 'ru' ? 'Начать заново' : 'Start over'}
                         </button>
                         <span className={`text-xs font-mono px-3 py-1 rounded-lg ${prompt.length >= 10 ? 'text-success bg-success/10 border border-success/20' : 'text-muted-foreground bg-muted'}`}>
                           {prompt.length >= 10 ? '✓ Ready' : `${prompt.length}/10`}

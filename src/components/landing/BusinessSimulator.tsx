@@ -2,29 +2,14 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Play, RotateCcw, Loader2, Globe, Sparkles, TrendingUp } from 'lucide-react';
+import { Play, RotateCcw, Loader2, Sparkles, Building2, BarChart3, Pencil } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import BusinessTab from './BusinessTab';
 import RealityTab from './RealityTab';
 import CoverageTab from './CoverageTab';
-import RegionTab from './RegionTab';
 import BossDecisionModal from './BossDecisionModal';
 import { RegionConfig, IndustryConfig } from '@/lib/regionData';
-
-/*
- * DEMO HAPPY PATH CHECKLIST:
- * 1. ✓ Prompt generated via wizard OR canon fallback
- * 2. ✓ Click "Launch" → LAUNCHING state → AI generates artifacts
- * 3. ✓ ARTIFACTS revealed with business data
- * 4. ✓ Click "Run test day" → timeline animates
- * 5. ✓ At 15:30 → DECISION state → modal appears, timeline PAUSES
- * 6. ✓ Make decision → timeline RESUMES
- * 7. ✓ At 100% → EVIDENCE trophies appear
- * 8. ✓ REPLAY mode → scrubber works, can run again
- * 9. ✓ "Edit prompt" returns to TYPED keeping prompt text
- */
 
 export type SimulatorState = 
   | 'EMPTY'
@@ -54,7 +39,6 @@ export interface BusinessData {
   };
   policies: string[];
   kpis?: string[];
-  // Digitize-specific fields
   isDigitize?: boolean;
   migrationPlan?: string[];
   automations?: string[];
@@ -257,83 +241,55 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
     setEvidenceRevealed(newEvidence);
   }, [state]);
 
-  // Loading state
+  // Loading state - cleaner, more focused
   if (state === 'LAUNCHING' || isGenerating) {
     return (
       <div className="mt-8 animate-fade-in">
-        <div className="glass-card p-6 md:p-8">
-          <div className="w-full grid grid-cols-4 bg-secondary/30 rounded-xl p-1 mb-6">
-            <Skeleton className="h-9 rounded-lg" />
-            <Skeleton className="h-9 rounded-lg" />
-            <Skeleton className="h-9 rounded-lg" />
-            <Skeleton className="h-9 rounded-lg" />
-          </div>
-
-          <div className="flex items-center gap-3 mb-6">
-            <Skeleton className="w-12 h-12 rounded-xl" />
-            <div className="flex-1 space-y-2">
-              <Skeleton className="h-6 w-48" />
-              <Skeleton className="h-4 w-64" />
-            </div>
-          </div>
-
-          <div className="grid md:grid-cols-2 gap-4 mb-6">
-            <div className="p-4 rounded-lg bg-secondary/20 border border-border/30 space-y-3">
-              <Skeleton className="h-5 w-24" />
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <Skeleton className="h-4 w-32" />
-                  <Skeleton className="h-4 w-16" />
-                </div>
-                <div className="flex justify-between">
-                  <Skeleton className="h-4 w-28" />
-                  <Skeleton className="h-4 w-20" />
-                </div>
-                <div className="flex justify-between">
-                  <Skeleton className="h-4 w-36" />
-                  <Skeleton className="h-4 w-16" />
-                </div>
+        <div className="glass-card p-8 md:p-12">
+          <div className="flex flex-col items-center justify-center py-4">
+            <div className="relative mb-6">
+              <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-primary/20 to-primary/5 flex items-center justify-center">
+                <Loader2 className="w-10 h-10 text-primary animate-spin" />
               </div>
+              <div className="absolute -inset-2 rounded-3xl bg-primary/10 animate-pulse" />
             </div>
-
-            <div className="p-4 rounded-lg bg-secondary/20 border border-border/30 space-y-3">
-              <Skeleton className="h-5 w-28" />
-              <div className="space-y-2">
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-5/6" />
-                <Skeleton className="h-4 w-4/5" />
-                <Skeleton className="h-4 w-full" />
-              </div>
-            </div>
-          </div>
-
-          <div className="flex flex-col items-center justify-center py-6">
-            <div className="relative">
-              <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-                <Loader2 className="w-8 h-8 text-primary animate-spin" />
-              </div>
-              <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
-            </div>
-            <h3 className="mt-4 text-lg font-semibold text-foreground">
+            
+            <h3 className="text-xl font-bold text-foreground text-center">
               {mode === 'digitize' 
-                ? (language === 'ru' ? 'Создаём план миграции...' : 'Creating migration plan...')
-                : (language === 'ru' ? 'Создаём ваш бизнес...' : 'Building your business...')
+                ? (language === 'ru' ? 'Создаём план оцифровки' : 'Creating digitization plan')
+                : (language === 'ru' ? 'Создаём ваш бизнес' : 'Building your business')
               }
             </h3>
-            <p className="mt-2 text-sm text-muted-foreground max-w-md text-center">
-              {mode === 'digitize'
-                ? (language === 'ru' 
-                    ? 'AI анализирует ваш бизнес и генерирует план оцифровки с автоматизациями'
-                    : 'AI is analyzing your business and generating a digitization plan with automations')
-                : (language === 'ru' 
-                    ? 'AI анализирует промпт и генерирует план, структуру и операционную систему'
-                    : 'AI is analyzing your prompt and generating the plan, structure, and operating system')
-              }
+            
+            <p className="mt-2 text-muted-foreground text-center max-w-sm">
+              {language === 'ru' 
+                ? 'AI генерирует структуру, процессы и операционную систему'
+                : 'AI is generating structure, processes, and operating system'}
             </p>
-          </div>
 
-          <div className="flex justify-center mt-4">
-            <Skeleton className="h-10 w-40 rounded-xl" />
+            {/* Progress steps */}
+            <div className="mt-8 flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="text-xs text-muted-foreground">
+                  {language === 'ru' ? 'Анализ' : 'Analysis'}
+                </span>
+              </div>
+              <div className="w-8 h-px bg-border" />
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-border" />
+                <span className="text-xs text-muted-foreground">
+                  {language === 'ru' ? 'Структура' : 'Structure'}
+                </span>
+              </div>
+              <div className="w-8 h-px bg-border" />
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full bg-border" />
+                <span className="text-xs text-muted-foreground">
+                  {language === 'ru' ? 'Готово' : 'Ready'}
+                </span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -343,46 +299,54 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
   if (!businessData) return null;
 
   const canRunTestDay = state === 'ARTIFACTS' || state === 'REPLAY';
+  const isRunning = ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE'].includes(state);
 
   return (
     <div className="mt-8 animate-fade-in-up">
-      {/* Digitize mode badge */}
-      {businessData.isDigitize && (
-        <div className="flex items-center justify-center mb-4">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-accent/10 border border-accent/20 text-accent text-xs font-medium">
-            <Sparkles className="w-3.5 h-3.5" />
-            {language === 'ru' ? 'Режим оцифровки' : 'Digitization Mode'}
+      {/* Header with business name and mode badge */}
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+            <Building2 className="w-5 h-5 text-primary" />
+          </div>
+          <div>
+            <h2 className="text-lg font-bold text-foreground">{businessData.name}</h2>
+            {businessData.tagline && (
+              <p className="text-xs text-muted-foreground">{businessData.tagline}</p>
+            )}
           </div>
         </div>
-      )}
+        <div className="flex items-center gap-2">
+          {businessData.isDigitize && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-accent/10 text-accent text-xs font-medium">
+              <Sparkles className="w-3 h-3" />
+              {language === 'ru' ? 'Оцифровка' : 'Digitize'}
+            </span>
+          )}
+          {region && (
+            <span className="px-2 py-1 bg-secondary text-foreground text-xs font-medium rounded">
+              {region.currencySymbol}
+            </span>
+          )}
+        </div>
+      </div>
 
-      {/* Tabs - now with 4 tabs including Reality */}
+      {/* Simplified Tabs - Just 2 main views */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-4 bg-secondary/50 rounded-xl p-1 mb-6">
+        <TabsList className="w-full grid grid-cols-2 bg-secondary/50 rounded-xl p-1 mb-6">
           <TabsTrigger 
             value="business" 
-            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-xs sm:text-sm"
+            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm gap-2"
           >
-            {t('tab.business')}
+            <Building2 className="w-4 h-4" />
+            {language === 'ru' ? 'Бизнес' : 'Business'}
           </TabsTrigger>
           <TabsTrigger 
-            value="reality"
-            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-xs sm:text-sm"
+            value="insights"
+            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm gap-2"
           >
-            <Globe className="w-3.5 h-3.5 mr-1 hidden sm:inline" />
-            {language === 'ru' ? 'Реальность' : 'Reality'}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="region"
-            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-xs sm:text-sm"
-          >
-            {t('tab.region')}
-          </TabsTrigger>
-          <TabsTrigger 
-            value="coverage"
-            className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-xs sm:text-sm"
-          >
-            {t('tab.coverage')}
+            <BarChart3 className="w-4 h-4" />
+            {language === 'ru' ? 'Инсайты' : 'Insights'}
           </TabsTrigger>
         </TabsList>
 
@@ -400,47 +364,59 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
           />
         </TabsContent>
 
-        <TabsContent value="reality" className="mt-0">
+        <TabsContent value="insights" className="mt-0 space-y-4">
           <RealityTab prompt={prompt} region={region} industry={industry} />
-        </TabsContent>
-
-        <TabsContent value="region" className="mt-0">
-          <RegionTab prompt={prompt} region={region || null} industry={industry || null} />
-        </TabsContent>
-
-        <TabsContent value="coverage" className="mt-0">
           <CoverageTab />
         </TabsContent>
       </Tabs>
 
-      {/* Test Day / Replay Controls */}
-      {activeTab === 'business' && (
-        <div className="mt-6 flex flex-wrap items-center justify-center gap-4">
-          {canRunTestDay && (
-            <Button
-              onClick={handleRunTestDay}
-              className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-xl px-6 h-12 text-base font-semibold shadow-lg shadow-primary/25"
-            >
-              <Play className="w-5 h-5" />
-              {state === 'REPLAY' 
-                ? (language === 'ru' ? 'Запустить снова' : 'Run again') 
-                : (language === 'ru' ? 'Запустить тестовый день' : 'Run a test day')
-              }
-            </Button>
-          )}
-          
-          {state === 'REPLAY' && (
-            <Button
-              variant="outline"
-              onClick={onEditPrompt}
-              className="gap-2 rounded-xl h-12"
-            >
-              <RotateCcw className="w-4 h-4" />
-              {t('replay.edit')}
-            </Button>
-          )}
+      {/* Action Bar - Fixed at bottom of simulator */}
+      <div className="mt-6 p-4 bg-secondary/30 rounded-xl border border-border/50">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          {/* Left: State indicator */}
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${
+              isRunning ? 'bg-success animate-pulse' : 
+              state === 'REPLAY' ? 'bg-accent' : 
+              'bg-primary'
+            }`} />
+            <span className="text-sm text-muted-foreground">
+              {state === 'ARTIFACTS' && (language === 'ru' ? 'Готов к запуску' : 'Ready to run')}
+              {isRunning && (language === 'ru' ? 'Тестовый день...' : 'Running test day...')}
+              {state === 'REPLAY' && (language === 'ru' ? 'Завершено' : 'Complete')}
+            </span>
+          </div>
+
+          {/* Right: Action buttons */}
+          <div className="flex items-center gap-3">
+            {state === 'REPLAY' && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={onEditPrompt}
+                className="gap-2 text-muted-foreground hover:text-foreground"
+              >
+                <Pencil className="w-4 h-4" />
+                {language === 'ru' ? 'Изменить' : 'Edit'}
+              </Button>
+            )}
+            
+            {canRunTestDay && (
+              <Button
+                onClick={handleRunTestDay}
+                size="sm"
+                className="gap-2 bg-primary text-primary-foreground hover:bg-primary/90 rounded-lg shadow-lg shadow-primary/20"
+              >
+                <Play className="w-4 h-4" />
+                {state === 'REPLAY' 
+                  ? (language === 'ru' ? 'Заново' : 'Run again') 
+                  : (language === 'ru' ? 'Запустить день' : 'Run test day')
+                }
+              </Button>
+            )}
+          </div>
         </div>
-      )}
+      </div>
 
       {/* Boss Decision Modal */}
       <BossDecisionModal 
