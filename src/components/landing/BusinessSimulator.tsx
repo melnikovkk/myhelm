@@ -296,10 +296,10 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
             {t('tab.business')}
           </TabsTrigger>
           <TabsTrigger 
-            value="reality"
+            value="region"
             className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all"
           >
-            {t('tab.reality')}
+            {t('tab.region')}
           </TabsTrigger>
           <TabsTrigger 
             value="coverage"
@@ -321,8 +321,8 @@ const BusinessSimulator = ({ state, setState, prompt, onEditPrompt, region, indu
           />
         </TabsContent>
 
-        <TabsContent value="reality" className="mt-0">
-          <RealityTab prompt={prompt} />
+        <TabsContent value="region" className="mt-0">
+          <RegionTab prompt={prompt} region={region || null} industry={industry || null} />
         </TabsContent>
 
         <TabsContent value="coverage" className="mt-0">

@@ -15,7 +15,12 @@ import {
   Trophy,
   Target,
   Zap,
-  TrendingUp
+  TrendingUp,
+  Inbox,
+  CreditCard,
+  FileSpreadsheet,
+  Shield,
+  AlertCircle
 } from 'lucide-react';
 import { Slider } from '@/components/ui/slider';
 import RunHUD from './RunHUD';
@@ -64,6 +69,52 @@ const BusinessTab = ({
 
   const week1Items = data.week1Goals || data.week1 || [];
 
+  // System Readiness items based on business data
+  const readinessItems = [
+    { 
+      key: 'inbox', 
+      icon: Inbox, 
+      label: language === 'ru' ? 'Входящие готовы' : 'Inbox ready', 
+      detail: data.channel || 'WhatsApp',
+      status: 'ready' as const
+    },
+    { 
+      key: 'payments', 
+      icon: CreditCard, 
+      label: language === 'ru' ? 'Платежи готовы' : 'Payments ready', 
+      detail: language === 'ru' ? 'Карты, переводы' : 'Cards, transfers',
+      status: 'ready' as const
+    },
+    { 
+      key: 'accounting', 
+      icon: FileSpreadsheet, 
+      label: language === 'ru' ? 'Учёт готов' : 'Accounting ready', 
+      detail: language === 'ru' ? 'PDF-счета' : 'PDF invoices',
+      status: 'ready' as const
+    },
+    { 
+      key: 'identity', 
+      icon: Shield, 
+      label: language === 'ru' ? 'Согласие готово' : 'Consent ready', 
+      detail: 'GDPR/CCPA',
+      status: 'planned' as const
+    },
+  ];
+
+  const getStatusColor = (status: 'ready' | 'planned' | 'human-bridge') => {
+    switch (status) {
+      case 'ready': return 'text-success bg-success/10';
+      case 'planned': return 'text-accent bg-accent/10';
+      case 'human-bridge': return 'text-warning bg-warning/10';
+    }
+  };
+
+  const getStatusLabel = (status: 'ready' | 'planned' | 'human-bridge') => {
+    if (status === 'ready') return language === 'ru' ? 'Готово' : 'Ready';
+    if (status === 'planned') return language === 'ru' ? 'Планируется' : 'Planned';
+    return 'Human-bridge';
+  };
+
   return (
     <div className="space-y-6">
       {/* Business Header with Name & Tagline */}
@@ -80,6 +131,35 @@ const BusinessTab = ({
               {data.channel}
             </span>
           </div>
+        </div>
+      </div>
+
+      {/* System Readiness Panel */}
+      <div className="glass-card p-4 rounded-xl border-accent/20">
+        <h4 className="text-xs font-medium text-muted-foreground mb-3 uppercase tracking-wide">
+          {language === 'ru' ? 'Готовность системы' : 'System Readiness'}
+        </h4>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          {readinessItems.map((item) => (
+            <div 
+              key={item.key}
+              className="flex items-center gap-2 p-2 bg-secondary/30 rounded-lg"
+            >
+              <div className={`w-6 h-6 rounded-md flex items-center justify-center ${getStatusColor(item.status)}`}>
+                {item.status === 'ready' ? (
+                  <CheckCircle className="w-3.5 h-3.5" />
+                ) : item.status === 'planned' ? (
+                  <Clock className="w-3.5 h-3.5" />
+                ) : (
+                  <AlertCircle className="w-3.5 h-3.5" />
+                )}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-xs font-medium text-foreground truncate">{item.label}</p>
+                <p className="text-[10px] text-muted-foreground truncate">{item.detail}</p>
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
