@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 
-const WaitlistForm = () => {
+const WaitlistForm = forwardRef<HTMLElement>((_, ref) => {
   const { t, language } = useLanguage();
   const { toast } = useToast();
   const navigate = useNavigate();
@@ -86,7 +86,7 @@ const WaitlistForm = () => {
   };
 
   return (
-    <section className="py-20 md:py-32 relative">
+    <section ref={ref} className="py-20 md:py-32 relative">
       <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none" />
       
       <div className="container mx-auto px-4 relative z-10">
@@ -162,6 +162,8 @@ const WaitlistForm = () => {
       </div>
     </section>
   );
-};
+});
+
+WaitlistForm.displayName = 'WaitlistForm';
 
 export default WaitlistForm;

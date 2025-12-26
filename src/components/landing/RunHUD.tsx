@@ -1,29 +1,18 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Clock, Trophy, Sparkles, PartyPopper } from 'lucide-react';
-import type { SimulatorState } from './BusinessSimulator';
+import { useDemo } from '@/contexts/DemoContext';
 import QuestLog from './QuestLog';
 import CeoAttention from './CeoAttention';
 import MiniMap from './MiniMap';
 
-interface RunHUDProps {
-  state: SimulatorState;
-  timelineProgress: number;
-  currentEventIndex: number;
-  decisionMade: 'approve' | 'deny' | 'photo' | null;
-  isReplay?: boolean;
-}
-
-const RunHUD = ({ 
-  state, 
-  timelineProgress, 
-  currentEventIndex, 
-  decisionMade,
-  isReplay 
-}: RunHUDProps) => {
+const RunHUD = () => {
   const { language } = useLanguage();
+  const { state, isReplay, isDayComplete } = useDemo();
   
-  const showHUD = ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
-  const isDayComplete = state === 'EVIDENCE' || state === 'REPLAY';
+  const { uiState, timeline } = state;
+  const { progress: timelineProgress, decisionMade } = timeline;
+  
+  const showHUD = ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(uiState);
   
   if (!showHUD) return null;
 
@@ -66,7 +55,7 @@ const RunHUD = ({
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center gap-3">
           <div className={`w-2 h-2 rounded-full ${
-            state === 'DECISION' ? 'bg-accent animate-pulse' : 
+            uiState === 'DECISION' ? 'bg-accent animate-pulse' : 
             isDayComplete ? 'bg-success' : 
             'bg-success animate-pulse'
           }`} />
@@ -75,18 +64,18 @@ const RunHUD = ({
               ? (language === 'ru' ? 'Режим воспроизведения' : 'Replay Mode')
               : isDayComplete
               ? (language === 'ru' ? 'День завершён' : 'Day Complete')
-              : state === 'DECISION'
+              : uiState === 'DECISION'
               ? (language === 'ru' ? 'Ожидание решения' : 'Awaiting Decision')
               : (language === 'ru' ? 'Тестовый день • Активен' : 'Test Day • Active')
             }
           </span>
-          {state === 'DECISION' && (
+          {uiState === 'DECISION' && (
             <Sparkles className="w-4 h-4 text-accent animate-pulse" />
           )}
         </div>
         <div className="flex items-center gap-2 text-muted-foreground">
           <Clock className="w-4 h-4" />
-          <span className={`font-mono text-sm ${state === 'DECISION' ? 'text-accent font-bold' : ''}`}>
+          <span className={`font-mono text-sm ${uiState === 'DECISION' ? 'text-accent font-bold' : ''}`}>
             {getCurrentTime()}
           </span>
         </div>
@@ -103,14 +92,14 @@ const RunHUD = ({
             }`}
             style={{ width: `${timelineProgress}%` }}
           >
-            {state === 'RUNNING' && (
+            {uiState === 'RUNNING' && (
               <div className="absolute inset-0 progress-shimmer" />
             )}
           </div>
         </div>
         
         {/* Timeline scanner indicator */}
-        {state === 'RUNNING' && (
+        {uiState === 'RUNNING' && (
           <div 
             className="timeline-scanner h-4 -top-1"
             style={{ left: `${timelineProgress}%` }}
@@ -129,10 +118,10 @@ const RunHUD = ({
       {/* Three-column HUD layout */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         {/* Left: Quest Log */}
-        <QuestLog state={state} decisionMade={decisionMade} />
+        <QuestLog />
 
         {/* Center: CEO Attention */}
-        <CeoAttention state={state} decisionMade={decisionMade} />
+        <CeoAttention />
 
         {/* Right: Mini-map */}
         <MiniMap />

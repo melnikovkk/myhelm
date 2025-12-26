@@ -1,16 +1,15 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { AlertTriangle, CheckCircle, XCircle, Camera, Zap } from 'lucide-react';
-import type { SimulatorState } from './BusinessSimulator';
+import { useDemo } from '@/contexts/DemoContext';
 
-interface CeoAttentionProps {
-  state: SimulatorState;
-  decisionMade: 'approve' | 'deny' | 'photo' | null;
-}
-
-const CeoAttention = ({ state, decisionMade }: CeoAttentionProps) => {
+const CeoAttention = () => {
   const { language } = useLanguage();
+  const { state } = useDemo();
   
-  const needsAttention = state === 'DECISION';
+  const { uiState, timeline } = state;
+  const { decisionMade } = timeline;
+  
+  const needsAttention = uiState === 'DECISION';
   const hasDecided = decisionMade !== null;
 
   return (

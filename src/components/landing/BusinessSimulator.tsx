@@ -152,10 +152,7 @@ const BusinessSimulator = () => {
       </div>
 
       {/* Boss Decision Modal */}
-      <BossDecisionModal 
-        open={state.uiState === 'DECISION'}
-        onDecision={actions.makeDecision}
-      />
+      <BossDecisionModal />
     </div>
   );
 };
