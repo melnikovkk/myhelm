@@ -36,12 +36,13 @@ const ProofSection = () => {
             {proofItems.map(({ icon: Icon, label }, i) => (
               <div 
                 key={i}
-                className="glass-card p-4 flex flex-col items-center gap-3 hover:border-primary/30 transition-colors"
+                className="glass-card p-4 flex flex-col items-center gap-3 card-interactive group opacity-0 animate-fade-in-up"
+                style={{ animationDelay: `${i * 100}ms`, animationFillMode: 'forwards' }}
               >
-                <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center">
+                <div className="w-12 h-12 rounded-xl bg-success/10 flex items-center justify-center group-hover:bg-success/20 group-hover:scale-110 transition-all duration-300">
                   <Icon className="w-6 h-6 text-success" />
                 </div>
-                <span className="text-sm text-foreground text-center">{label}</span>
+                <span className="text-sm text-foreground text-center group-hover:text-success transition-colors">{label}</span>
               </div>
             ))}
           </div>

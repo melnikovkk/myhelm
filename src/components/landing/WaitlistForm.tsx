@@ -145,7 +145,7 @@ const WaitlistForm = () => {
                 type="submit"
                 disabled={isSubmitting}
                 size="lg"
-                className="w-full gap-2 bg-primary text-primary-foreground btn-glow"
+                className="w-full gap-2 bg-primary text-primary-foreground btn-glow btn-press hover:shadow-glow transition-all duration-300"
               >
                 {isSubmitting ? (
                   <>

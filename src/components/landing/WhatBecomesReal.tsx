@@ -57,13 +57,13 @@ const WhatBecomesReal = () => {
           {artifacts.map(({ icon: Icon, titleKey, descKey }, i) => (
             <div 
               key={i}
-              className="glass-card p-6 text-center group hover:border-primary/30 transition-all duration-300"
-              style={{ animationDelay: `${i * 100}ms` }}
+              className="glass-card p-6 text-center group card-interactive opacity-0 animate-fade-in-up"
+              style={{ animationDelay: `${i * 150}ms`, animationFillMode: 'forwards' }}
             >
               <div className="w-14 h-14 rounded-2xl bg-primary/10 flex items-center justify-center mx-auto mb-4 group-hover:bg-primary/20 group-hover:scale-110 transition-all duration-300">
-                <Icon className="w-7 h-7 text-primary" />
+                <Icon className="w-7 h-7 text-primary group-hover:animate-pulse" />
               </div>
-              <h3 className="text-lg font-semibold text-foreground mb-2">
+              <h3 className="text-lg font-semibold text-foreground mb-2 group-hover:text-primary transition-colors">
                 {t(titleKey)}
               </h3>
               <p className="text-sm text-muted-foreground">

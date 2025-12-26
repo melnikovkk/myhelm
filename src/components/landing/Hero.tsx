@@ -102,38 +102,38 @@ const Hero = () => {
       
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-3xl mx-auto text-center mb-12">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6 animate-fade-in">
-            <Sparkles className="w-3.5 h-3.5" />
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium mb-6 opacity-0 animate-fade-in" style={{ animationFillMode: 'forwards' }}>
+            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
             {language === 'ru' ? 'AI-Powered Business Autopilot' : 'AI-Powered Business Autopilot'}
           </div>
-          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight">
+          <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-tight opacity-0 animate-fade-in-up" style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}>
             <span className="text-gradient">{t('hero.headline')}</span>
           </h1>
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-in-up" style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}>
             {t('hero.subheadline')}
           </p>
         </div>
 
         <div className="max-w-2xl mx-auto">
           {/* Region & Industry Selectors - Always visible */}
-          <div className="flex flex-wrap items-center justify-center gap-3 mb-4">
+          <div className="flex flex-wrap items-center justify-center gap-3 mb-4 opacity-0 animate-fade-in" style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}>
             {/* Region Selector */}
             <div className="relative">
               <button
                 onClick={() => { setShowRegionDropdown(!showRegionDropdown); setShowIndustryDropdown(false); }}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/50 hover:border-primary/30 transition-colors text-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/50 hover:border-primary/30 hover:bg-secondary/80 transition-all duration-300 text-sm focus-ring"
               >
                 <Globe className="w-4 h-4 text-primary" />
                 <span className="text-foreground">{selectedRegion ? (language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn) : (language === 'ru' ? 'Выбрать регион' : 'Select region')}</span>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showRegionDropdown ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showRegionDropdown ? 'rotate-180' : ''}`} />
               </button>
               {showRegionDropdown && (
-                <div className="absolute z-50 top-full left-0 mt-1 w-56 max-h-64 overflow-y-auto bg-card border border-border rounded-lg shadow-xl animate-fade-in">
+                <div className="absolute z-50 top-full left-0 mt-1 w-56 max-h-64 overflow-y-auto bg-card border border-border rounded-lg shadow-elevated animate-scale-in">
                   {REGIONS.map((region) => (
                     <button
                       key={region.code}
                       onClick={() => { setSelectedRegion(region); setShowRegionDropdown(false); }}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-secondary/50 transition-colors flex items-center justify-between ${selectedRegion?.code === region.code ? 'bg-primary/10 text-primary' : 'text-foreground'}`}
+                      className={`w-full px-3 py-2.5 text-left text-sm transition-all duration-200 flex items-center justify-between hover:pl-4 ${selectedRegion?.code === region.code ? 'bg-primary/10 text-primary' : 'text-foreground hover:bg-secondary/50'}`}
                     >
                       <span>{language === 'ru' ? region.nameRu : region.nameEn}</span>
                       <span className="text-xs text-muted-foreground">{region.currency}</span>
@@ -147,19 +147,19 @@ const Hero = () => {
             <div className="relative">
               <button
                 onClick={() => { setShowIndustryDropdown(!showIndustryDropdown); setShowRegionDropdown(false); }}
-                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/50 hover:border-primary/30 transition-colors text-sm"
+                className="flex items-center gap-2 px-3 py-2 rounded-lg bg-secondary/50 border border-border/50 hover:border-accent/30 hover:bg-secondary/80 transition-all duration-300 text-sm focus-ring"
               >
                 <Briefcase className="w-4 h-4 text-accent" />
                 <span className="text-foreground">{selectedIndustry ? (language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn) : (language === 'ru' ? 'Выбрать отрасль' : 'Select industry')}</span>
-                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showIndustryDropdown ? 'rotate-180' : ''}`} />
+                <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform duration-200 ${showIndustryDropdown ? 'rotate-180' : ''}`} />
               </button>
               {showIndustryDropdown && (
-                <div className="absolute z-50 top-full left-0 mt-1 w-56 bg-card border border-border rounded-lg shadow-xl animate-fade-in">
+                <div className="absolute z-50 top-full left-0 mt-1 w-56 bg-card border border-border rounded-lg shadow-elevated animate-scale-in">
                   {INDUSTRIES.map((industry) => (
                     <button
                       key={industry.key}
                       onClick={() => { setSelectedIndustry(industry); setShowIndustryDropdown(false); }}
-                      className={`w-full px-3 py-2 text-left text-sm hover:bg-secondary/50 transition-colors ${selectedIndustry?.key === industry.key ? 'bg-accent/10 text-accent' : 'text-foreground'}`}
+                      className={`w-full px-3 py-2.5 text-left text-sm transition-all duration-200 hover:pl-4 ${selectedIndustry?.key === industry.key ? 'bg-accent/10 text-accent' : 'text-foreground hover:bg-secondary/50'}`}
                     >
                       {language === 'ru' ? industry.labelRu : industry.labelEn}
                     </button>
@@ -169,7 +169,7 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="glass-card p-6 md:p-8 rounded-2xl">
+          <div className="glass-card p-6 md:p-8 rounded-2xl hover-lift opacity-0 animate-scale-in" style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}>
             {/* Wizard Mode: Show prompt generator */}
             {showWizard && !prompt && (
               <PromptGenerator 
