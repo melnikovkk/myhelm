@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { 
   Globe, 
   Receipt, 
@@ -12,7 +13,10 @@ import {
   CheckCircle,
   Clock,
   AlertCircle,
-  Search
+  Search,
+  Link2,
+  Package,
+  Phone
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { 
@@ -40,11 +44,24 @@ interface RegionalRules {
   sources: { title: string; url: string }[];
 }
 
+interface CompetitorData {
+  services: string[];
+  packages: { name: string; price: string }[];
+  contact: string;
+  positioning: string;
+}
+
 const RegionTab = ({ prompt, region, industry }: RegionTabProps) => {
   const { language } = useLanguage();
   const [isFetching, setIsFetching] = useState(false);
   const [regionalRules, setRegionalRules] = useState<RegionalRules | null>(null);
   const [error, setError] = useState<string | null>(null);
+
+  // Competitor scan state
+  const [competitorUrl, setCompetitorUrl] = useState('');
+  const [isScanning, setIsScanning] = useState(false);
+  const [competitorData, setCompetitorData] = useState<CompetitorData | null>(null);
+  const [scanError, setScanError] = useState<string | null>(null);
 
   const remaining = getRealityRemaining();
   const canFetch = canUseReality();
@@ -97,6 +114,39 @@ const RegionTab = ({ prompt, region, industry }: RegionTabProps) => {
       );
     } finally {
       setIsFetching(false);
+    }
+  };
+
+  const scanCompetitor = async () => {
+    if (!competitorUrl.trim() || isScanning) return;
+
+    setIsScanning(true);
+    setScanError(null);
+
+    try {
+      const { data, error: fnError } = await supabase.functions.invoke('competitor-scan', {
+        body: {
+          url: competitorUrl,
+          locale: language,
+        },
+      });
+
+      if (fnError) throw fnError;
+
+      if (data?.success && data?.data) {
+        setCompetitorData(data.data);
+      } else {
+        throw new Error(data?.error || 'Failed to scan competitor');
+      }
+    } catch (err) {
+      console.error('Competitor scan error:', err);
+      setScanError(
+        language === 'ru'
+          ? 'Не удалось сканировать конкурента'
+          : 'Failed to scan competitor'
+      );
+    } finally {
+      setIsScanning(false);
     }
   };
 
@@ -359,6 +409,95 @@ const RegionTab = ({ prompt, region, industry }: RegionTabProps) => {
           </div>
         </div>
       )}
+
+      {/* Competitor Scan (Optional) */}
+      <div className="glass-card p-5 border-dashed border-2 border-border/50">
+        <h4 className="font-medium text-foreground mb-3 flex items-center gap-2">
+          <Link2 className="w-4 h-4 text-muted-foreground" />
+          {language === 'ru' ? 'Анализ конкурента (опционально)' : 'Competitor Scan (optional)'}
+        </h4>
+        <p className="text-xs text-muted-foreground mb-3">
+          {language === 'ru' 
+            ? 'Вставьте URL конкурента, чтобы извлечь услуги, цены и контакты' 
+            : 'Paste a competitor URL to extract services, prices, and contact info'}
+        </p>
+        
+        <div className="flex gap-2">
+          <Input
+            type="url"
+            value={competitorUrl}
+            onChange={(e) => setCompetitorUrl(e.target.value)}
+            placeholder={language === 'ru' ? 'https://конкурент.com' : 'https://competitor.com'}
+            className="flex-1 text-sm"
+          />
+          <Button
+            onClick={scanCompetitor}
+            disabled={!competitorUrl.trim() || isScanning}
+            size="sm"
+            variant="outline"
+            className="gap-2"
+          >
+            {isScanning ? (
+              <Loader2 className="w-4 h-4 animate-spin" />
+            ) : (
+              <Search className="w-4 h-4" />
+            )}
+            {language === 'ru' ? 'Сканировать' : 'Scan'}
+          </Button>
+        </div>
+
+        {scanError && (
+          <p className="text-xs text-destructive mt-2 flex items-center gap-1">
+            <AlertCircle className="w-3 h-3" />
+            {scanError}
+          </p>
+        )}
+
+        {/* Competitor Results */}
+        {competitorData && (
+          <div className="mt-4 pt-4 border-t border-border/50 space-y-3 animate-fade-in">
+            {competitorData.positioning && (
+              <div>
+                <span className="text-xs text-muted-foreground">{language === 'ru' ? 'Позиционирование' : 'Positioning'}</span>
+                <p className="text-sm text-foreground mt-1">{competitorData.positioning}</p>
+              </div>
+            )}
+
+            {competitorData.packages.length > 0 && (
+              <div>
+                <span className="text-xs text-muted-foreground flex items-center gap-1 mb-2">
+                  <Package className="w-3 h-3" />
+                  {language === 'ru' ? 'Пакеты' : 'Packages'}
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {competitorData.packages.map((pkg, i) => (
+                    <span key={i} className="px-2 py-1 bg-secondary text-foreground text-xs rounded">
+                      {pkg.name} — {pkg.price}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {competitorData.services.length > 0 && (
+              <div>
+                <span className="text-xs text-muted-foreground">{language === 'ru' ? 'Услуги' : 'Services'}</span>
+                <p className="text-sm text-foreground mt-1">{competitorData.services.join(', ')}</p>
+              </div>
+            )}
+
+            {competitorData.contact && (
+              <div>
+                <span className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Phone className="w-3 h-3" />
+                  {language === 'ru' ? 'Контакт' : 'Contact'}
+                </span>
+                <p className="text-sm text-foreground mt-1">{competitorData.contact}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };
