@@ -1,56 +1,60 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useDemo } from '@/contexts/DemoContext';
 import { Button } from '@/components/ui/button';
 import { 
-  Sparkles, 
   Loader2, 
   Rocket,
   Zap,
   ArrowRight,
-  Play,
   Globe,
   Briefcase,
   ChevronDown,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
-import { REGIONS, INDUSTRIES, RegionConfig, IndustryConfig } from '@/lib/regionData';
-
-type Mode = 'zero' | 'digitize';
+import { REGIONS, INDUSTRIES } from '@/lib/regionData';
 
 interface PromptGeneratorProps {
-  onPromptGenerated: (prompt: string, mode: Mode, region: RegionConfig, industry: IndustryConfig) => void;
   onUseCanon: () => void;
 }
 
-const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps) => {
+const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
   const { language } = useLanguage();
+  const { state, actions } = useDemo();
   const [isGenerating, setIsGenerating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  
-  // Combined state - region and industry are now inside the wizard
-  const [selectedRegion, setSelectedRegion] = useState<RegionConfig>(REGIONS.find(r => r.code === 'DE') || REGIONS[0]);
-  const [selectedIndustry, setSelectedIndustry] = useState<IndustryConfig>(INDUSTRIES.find(i => i.key === 'service') || INDUSTRIES[0]);
   const [showRegionPicker, setShowRegionPicker] = useState(false);
   const [showIndustryPicker, setShowIndustryPicker] = useState(false);
+  
+  // Double-click protection
+  const isGeneratingRef = useRef(false);
 
-  const handleQuickStart = async (mode: Mode) => {
+  const handleQuickStart = async (mode: 'zero' | 'digitize') => {
+    // Double-click protection
+    if (isGeneratingRef.current || isGenerating) return;
+    isGeneratingRef.current = true;
+    
     setIsGenerating(true);
     setError(null);
+    actions.setMode(mode);
 
     try {
-      const regionName = language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn;
-      const industryName = language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn;
+      const region = state.region!;
+      const industry = state.industry!;
+      const regionName = language === 'ru' ? region.nameRu : region.nameEn;
+      const industryName = language === 'ru' ? industry.labelRu : industry.labelEn;
 
       const { data, error: fnError } = await supabase.functions.invoke('generate-demo-prompt', {
         body: {
           mode,
-          businessType: selectedIndustry.key,
+          businessType: industry.key,
           location: regionName,
           locale: language,
-          regionCode: selectedRegion.code,
-          currency: selectedRegion.currency,
-          industryKey: selectedIndustry.key,
+          regionCode: region.code,
+          currency: region.currency,
+          industryKey: industry.key,
           industryName: industryName,
         },
       });
@@ -58,7 +62,7 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
       if (fnError) throw fnError;
 
       if (data?.prompt) {
-        onPromptGenerated(data.prompt, mode, selectedRegion, selectedIndustry);
+        actions.setPrompt(data.prompt, 'generated');
       } else {
         throw new Error('No prompt generated');
       }
@@ -69,6 +73,7 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
         : 'Generation failed. Please try again.');
     } finally {
       setIsGenerating(false);
+      isGeneratingRef.current = false;
     }
   };
 
@@ -87,9 +92,11 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
               {language === 'ru' ? 'Создаём ваш бизнес...' : 'Creating your business...'}
             </h3>
             <p className="text-sm text-muted-foreground mt-1">
-              {language === 'ru' 
-                ? `${selectedIndustry.labelRu} в ${selectedRegion.nameRu}` 
-                : `${selectedIndustry.labelEn} in ${selectedRegion.nameEn}`}
+              {state.industry && state.region && (
+                language === 'ru' 
+                  ? `${state.industry.labelRu} в ${state.region.nameRu}` 
+                  : `${state.industry.labelEn} in ${state.region.nameEn}`
+              )}
             </p>
           </div>
         </div>
@@ -109,9 +116,9 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
           >
             <Globe className="w-4 h-4 text-primary" />
             <span className="text-foreground font-medium">
-              {language === 'ru' ? selectedRegion.nameRu : selectedRegion.nameEn}
+              {state.region && (language === 'ru' ? state.region.nameRu : state.region.nameEn)}
             </span>
-            <span className="text-xs text-muted-foreground font-mono">{selectedRegion.currencySymbol}</span>
+            <span className="text-xs text-muted-foreground font-mono">{state.region?.currencySymbol}</span>
             <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showRegionPicker ? 'rotate-180' : ''}`} />
           </button>
           {showRegionPicker && (
@@ -120,9 +127,9 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
                 {REGIONS.map((region) => (
                   <button
                     key={region.code}
-                    onClick={() => { setSelectedRegion(region); setShowRegionPicker(false); }}
+                    onClick={() => { actions.setRegion(region); setShowRegionPicker(false); }}
                     className={`w-full px-3 py-2 text-left text-sm rounded-lg transition-colors flex items-center justify-between ${
-                      selectedRegion.code === region.code 
+                      state.region?.code === region.code 
                         ? 'bg-primary/10 text-primary' 
                         : 'hover:bg-secondary/70 text-foreground'
                     }`}
@@ -146,7 +153,7 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
           >
             <Briefcase className="w-4 h-4 text-accent" />
             <span className="text-foreground font-medium">
-              {language === 'ru' ? selectedIndustry.labelRu : selectedIndustry.labelEn}
+              {state.industry && (language === 'ru' ? state.industry.labelRu : state.industry.labelEn)}
             </span>
             <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showIndustryPicker ? 'rotate-180' : ''}`} />
           </button>
@@ -156,9 +163,9 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
                 {INDUSTRIES.map((industry) => (
                   <button
                     key={industry.key}
-                    onClick={() => { setSelectedIndustry(industry); setShowIndustryPicker(false); }}
+                    onClick={() => { actions.setIndustry(industry); setShowIndustryPicker(false); }}
                     className={`w-full px-3 py-2 text-left text-sm rounded-lg transition-colors ${
-                      selectedIndustry.key === industry.key 
+                      state.industry?.key === industry.key 
                         ? 'bg-accent/10 text-accent' 
                         : 'hover:bg-secondary/70 text-foreground'
                     }`}
@@ -177,6 +184,7 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
         {/* Primary CTA: Start New Business */}
         <Button
           onClick={() => handleQuickStart('zero')}
+          disabled={isGenerating}
           size="lg"
           className="w-full gap-3 text-lg font-semibold h-14 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] transition-all duration-300"
         >
@@ -188,6 +196,7 @@ const PromptGenerator = ({ onPromptGenerated, onUseCanon }: PromptGeneratorProps
         {/* Secondary CTA: Digitize Existing */}
         <Button
           onClick={() => handleQuickStart('digitize')}
+          disabled={isGenerating}
           variant="outline"
           size="lg"
           className="w-full gap-3 text-base font-medium h-12 rounded-xl border-2 border-accent/30 hover:border-accent hover:bg-accent/5 transition-all duration-300"
