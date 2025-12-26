@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useDemo } from '@/contexts/DemoContext';
 import {
   Dialog,
   DialogContent,
@@ -10,23 +11,22 @@ import {
 } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { AlertTriangle, Check, X, Camera, Zap, Shield, Clock } from 'lucide-react';
+import type { DecisionType } from '@/lib/demoStore';
 
-interface BossDecisionModalProps {
-  open: boolean;
-  onDecision: (decision: 'approve' | 'deny' | 'photo') => void;
-}
-
-const BossDecisionModal = ({ open, onDecision }: BossDecisionModalProps) => {
+const BossDecisionModal = () => {
   const { t, language } = useLanguage();
-  const [selectedAction, setSelectedAction] = useState<'approve' | 'deny' | 'photo' | null>(null);
+  const { state, actions } = useDemo();
+  const [selectedAction, setSelectedAction] = useState<DecisionType | null>(null);
 
-  const handleActionClick = (action: 'approve' | 'deny' | 'photo') => {
+  const open = state.uiState === 'DECISION';
+
+  const handleActionClick = (action: DecisionType) => {
     if (selectedAction) return; // Prevent double-clicks
     setSelectedAction(action);
     
     // Brief visual feedback then trigger decision
     setTimeout(() => {
-      onDecision(action);
+      actions.makeDecision(action);
       setSelectedAction(null);
     }, 300);
   };

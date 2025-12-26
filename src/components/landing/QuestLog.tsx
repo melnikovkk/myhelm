@@ -1,18 +1,14 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { Check, Circle, Target } from 'lucide-react';
-import type { SimulatorState } from './BusinessSimulator';
-
-interface QuestLogProps {
-  state: SimulatorState;
-  decisionMade: 'approve' | 'deny' | 'photo' | null;
-}
+import { useDemo } from '@/contexts/DemoContext';
+import type { UIState, DecisionType } from '@/lib/demoStore';
 
 interface Quest {
   id: string;
   titleEn: string;
   titleRu: string;
-  isComplete: (state: SimulatorState, decisionMade: 'approve' | 'deny' | 'photo' | null) => boolean;
-  isActive: (state: SimulatorState) => boolean;
+  isComplete: (uiState: UIState, decisionMade: DecisionType | null) => boolean;
+  isActive: (uiState: UIState) => boolean;
 }
 
 const QUESTS: Quest[] = [
@@ -20,30 +16,34 @@ const QUESTS: Quest[] = [
     id: 'launch',
     titleEn: 'Launch business blueprint',
     titleRu: 'Запустить бизнес-план',
-    isComplete: (state) => ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state),
-    isActive: (state) => state === 'ARTIFACTS',
+    isComplete: (uiState) => ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(uiState),
+    isActive: (uiState) => uiState === 'ARTIFACTS',
   },
   {
     id: 'decision',
     titleEn: 'Handle CEO decision',
     titleRu: 'Принять решение CEO',
-    isComplete: (state, decisionMade) => decisionMade !== null && ['DECIDED', 'EVIDENCE', 'REPLAY'].includes(state),
-    isActive: (state) => state === 'DECISION',
+    isComplete: (uiState, decisionMade) => decisionMade !== null && ['DECIDED', 'EVIDENCE', 'REPLAY'].includes(uiState),
+    isActive: (uiState) => uiState === 'DECISION',
   },
   {
     id: 'evidence',
     titleEn: 'Collect proof trophies',
     titleRu: 'Собрать трофеи-доказательства',
-    isComplete: (state) => state === 'REPLAY',
-    isActive: (state) => state === 'EVIDENCE',
+    isComplete: (uiState) => uiState === 'REPLAY',
+    isActive: (uiState) => uiState === 'EVIDENCE',
   },
 ];
 
-const QuestLog = ({ state, decisionMade }: QuestLogProps) => {
+const QuestLog = () => {
   const { language } = useLanguage();
+  const { state } = useDemo();
   
-  const completedCount = QUESTS.filter(q => q.isComplete(state, decisionMade)).length;
-  const showLog = ['ARTIFACTS', 'RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state);
+  const { uiState, timeline } = state;
+  const { decisionMade } = timeline;
+  
+  const completedCount = QUESTS.filter(q => q.isComplete(uiState, decisionMade)).length;
+  const showLog = ['ARTIFACTS', 'RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(uiState);
 
   if (!showLog) return null;
 
@@ -61,8 +61,8 @@ const QuestLog = ({ state, decisionMade }: QuestLogProps) => {
 
       <div className="space-y-1">
         {QUESTS.map((quest) => {
-          const completed = quest.isComplete(state, decisionMade);
-          const active = quest.isActive(state);
+          const completed = quest.isComplete(uiState, decisionMade);
+          const active = quest.isActive(uiState);
 
           return (
             <div

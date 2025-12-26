@@ -1,7 +1,8 @@
+import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Shield, Camera, FileCheck, Receipt, Lock } from 'lucide-react';
 
-const ProofSection = () => {
+const ProofSection = forwardRef<HTMLElement>((_, ref) => {
   const { t, language } = useLanguage();
 
   const proofItems = [
@@ -12,7 +13,7 @@ const ProofSection = () => {
   ];
 
   return (
-    <section className="py-20 md:py-32 relative overflow-hidden">
+    <section ref={ref} className="py-20 md:py-32 relative overflow-hidden">
       {/* Background effect */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-accent/5 pointer-events-none" />
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-primary/5 rounded-full blur-[100px] pointer-events-none" />
@@ -50,6 +51,8 @@ const ProofSection = () => {
       </div>
     </section>
   );
-};
+});
+
+ProofSection.displayName = 'ProofSection';
 
 export default ProofSection;

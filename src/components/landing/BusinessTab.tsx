@@ -40,15 +40,7 @@ const BusinessTab = () => {
   return (
     <div className="space-y-4">
       {/* Run HUD */}
-      {showTimeline && (
-        <RunHUD
-          state={state.uiState}
-          timelineProgress={state.timeline.progress}
-          currentEventIndex={state.timeline.currentEventIndex}
-          decisionMade={state.timeline.decisionMade}
-          isReplay={isReplay}
-        />
-      )}
+      {showTimeline && <RunHUD />}
 
       {/* Main Content Grid */}
       <div className="grid md:grid-cols-2 gap-4">
