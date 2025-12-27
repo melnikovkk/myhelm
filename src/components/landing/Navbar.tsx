@@ -81,6 +81,9 @@ const Navbar = () => {
           <Button 
             size="sm" 
             className="bg-primary text-primary-foreground hover:bg-primary/90 font-semibold rounded-xl px-5 shadow-sm hover:shadow-glow transition-all ml-1"
+            onClick={() => {
+              document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
+            }}
           >
             {t('nav.cta')}
           </Button>

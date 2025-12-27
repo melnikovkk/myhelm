@@ -86,7 +86,7 @@ const WaitlistForm = forwardRef<HTMLElement>((_, ref) => {
   };
 
   return (
-    <section ref={ref} className="py-20 md:py-32 relative">
+    <section ref={ref} id="waitlist" className="py-20 md:py-32 relative">
       <div className="absolute inset-0 bg-gradient-to-t from-primary/5 via-transparent to-transparent pointer-events-none" />
       
       <div className="container mx-auto px-4 relative z-10">
