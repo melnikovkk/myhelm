@@ -2,10 +2,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useDemo } from '@/contexts/DemoContext';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Sparkles, Pencil, Play, ArrowRight, RotateCcw, Zap } from 'lucide-react';
+import { Pencil, Play, ArrowRight, RotateCcw } from 'lucide-react';
 import BusinessSimulator from './BusinessSimulator';
 import PromptGenerator from './PromptGenerator';
-import heroAbstract from '@/assets/hero-abstract-new.jpg';
 import dashboardPreview from '@/assets/dashboard-preview.png';
 
 const Hero = () => {
@@ -38,100 +37,62 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden">
-      {/* Hero Background */}
-      <div className="absolute inset-0">
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 dark:opacity-40"
-          style={{ backgroundImage: `url(${heroAbstract})` }}
-        />
-        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/90 to-background" />
-        <div className="absolute inset-0 surface-dots opacity-20" />
-        {/* Animated gradient orbs */}
-        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] animate-pulse-slow pointer-events-none" />
-        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] animate-float pointer-events-none" />
-      </div>
-      
+    <section className="relative min-h-screen bg-background">
       {/* Hero Content - Pre-simulator state */}
       {!showSimulator && (
-        <div className="relative pt-24 pb-16 md:pt-32 md:pb-24 flex items-center min-h-screen">
+        <div className="relative pt-24 pb-16 md:pt-32 md:pb-24 min-h-screen">
           <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Content */}
               <div className="text-center lg:text-left">
                 {/* Badge */}
-                <div 
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 opacity-0 animate-fade-in border border-primary/20 backdrop-blur-sm" 
-                  style={{ animationFillMode: 'forwards' }}
-                >
-                  <Sparkles className="w-4 h-4" />
-                  <span>AI-Powered Business Autopilot</span>
-                  <Zap className="w-4 h-4" />
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium mb-6 border border-primary/10">
+                  <span>{language === 'ru' ? 'Бизнес-автопилот на ИИ' : 'AI Business Autopilot'}</span>
                 </div>
                 
                 {/* Headline */}
-                <h1 
-                  className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-6 leading-[1.08] tracking-tight opacity-0 animate-fade-in-up" 
-                  style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}
-                >
-                  <span className="text-gradient">{t('hero.headline')}</span>
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-[1.1] tracking-tight">
+                  {t('hero.headline')}
                 </h1>
                 
                 {/* Subheadline */}
-                <p 
-                  className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 opacity-0 animate-fade-in-up leading-relaxed mb-8" 
-                  style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}
-                >
+                <p className="text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed mb-10">
                   {t('hero.subheadline')}
                 </p>
 
                 {/* Stats row */}
-                <div 
-                  className="flex flex-wrap justify-center lg:justify-start gap-6 opacity-0 animate-fade-in-up"
-                  style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}
-                >
-                  <div className="text-center lg:text-left">
-                    <div className="text-2xl md:text-3xl font-bold text-foreground">12</div>
-                    <div className="text-xs text-muted-foreground">{language === 'ru' ? 'Бизнес-доменов' : 'Business Domains'}</div>
+                <div className="flex flex-wrap justify-center lg:justify-start gap-8">
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">12</div>
+                    <div className="text-sm text-muted-foreground">{language === 'ru' ? 'Доменов' : 'Domains'}</div>
                   </div>
-                  <div className="w-px h-12 bg-border hidden sm:block" />
-                  <div className="text-center lg:text-left">
-                    <div className="text-2xl md:text-3xl font-bold text-success">100%</div>
-                    <div className="text-xs text-muted-foreground">{language === 'ru' ? 'Прозрачность' : 'Transparency'}</div>
+                  <div className="w-px bg-border" />
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">100%</div>
+                    <div className="text-sm text-muted-foreground">{language === 'ru' ? 'Прозрачность' : 'Transparent'}</div>
                   </div>
-                  <div className="w-px h-12 bg-border hidden sm:block" />
-                  <div className="text-center lg:text-left">
-                    <div className="text-2xl md:text-3xl font-bold text-accent">24/7</div>
-                    <div className="text-xs text-muted-foreground">{language === 'ru' ? 'Автопилот' : 'Autopilot'}</div>
+                  <div className="w-px bg-border" />
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">24/7</div>
+                    <div className="text-sm text-muted-foreground">{language === 'ru' ? 'Автопилот' : 'Autopilot'}</div>
                   </div>
                 </div>
               </div>
 
               {/* Right: Dashboard Preview */}
-              <div 
-                className="relative hidden lg:block opacity-0 animate-fade-in"
-                style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}
-              >
-                <div className="relative">
-                  <img 
-                    src={dashboardPreview} 
-                    alt="HELM Dashboard Preview" 
-                    className="w-full h-auto rounded-2xl shadow-2xl animate-float"
-                  />
-                  {/* Glow effect */}
-                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 rounded-3xl blur-2xl -z-10" />
-                </div>
+              <div className="relative hidden lg:block">
+                <img 
+                  src={dashboardPreview} 
+                  alt="HELM Dashboard" 
+                  className="w-full h-auto rounded-2xl"
+                />
               </div>
             </div>
 
-            {/* Demo Card - Centered below */}
-            <div className="max-w-xl mx-auto mt-12 lg:mt-16">
-              {/* Main Demo Card */}
+            {/* Demo Card */}
+            <div className="max-w-lg mx-auto mt-16">
               {(showWizard || state.prompt) && (
-                <div 
-                  className="glass-card p-6 md:p-8 opacity-0 animate-scale-in" 
-                  style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}
-                >
+                <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-sm">
                   {/* Wizard Mode */}
                   {showWizard && (
                     <PromptGenerator onUseCanon={handleUseCanon} />
@@ -144,21 +105,21 @@ const Hero = () => {
                       {(state.region || state.industry) && (
                         <div className="flex flex-wrap items-center gap-2 mb-5">
                           {state.region && (
-                            <span className="pill-primary">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-medium">
                               {language === 'ru' ? state.region.nameRu : state.region.nameEn}
-                              <span className="mx-1.5 opacity-40">•</span>
-                              <span className="font-semibold">{state.region.currencySymbol}</span>
+                              <span className="mx-1 opacity-40">•</span>
+                              {state.region.currencySymbol}
                             </span>
                           )}
                           {state.industry && (
-                            <span className="pill-accent">
+                            <span className="inline-flex items-center px-2.5 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-medium">
                               {language === 'ru' ? state.industry.labelRu : state.industry.labelEn}
                             </span>
                           )}
-                          <span className={`pill ${
+                          <span className={`inline-flex items-center px-2.5 py-1 rounded-md text-xs font-medium ${
                             state.mode === 'digitize' 
                               ? 'bg-accent/10 text-accent' 
-                              : 'bg-success/10 text-success'
+                              : 'bg-primary/10 text-primary'
                           }`}>
                             {state.mode === 'digitize' 
                               ? (language === 'ru' ? 'Оцифровка' : 'Digitize')
@@ -174,36 +135,36 @@ const Hero = () => {
                             value={state.prompt}
                             onChange={(e) => handlePromptChange(e.target.value)}
                             placeholder={t('hero.prompt.placeholder')}
-                            className="min-h-[140px] bg-secondary/50 border-border focus:border-primary resize-none text-base rounded-xl"
+                            className="min-h-[120px] bg-background border-border focus:border-primary resize-none text-sm"
                           />
                         </div>
                       ) : (
                         <div className="mb-6">
-                          <div className="relative p-5 bg-secondary rounded-xl group hover:bg-secondary/80 transition-colors">
-                            <p className="text-base text-foreground leading-relaxed pr-10">
+                          <div className="relative p-4 bg-secondary/50 rounded-lg group">
+                            <p className="text-sm text-foreground leading-relaxed pr-8">
                               {state.prompt}
                             </p>
                             <button
                               onClick={() => actions.setEditing(true)}
-                              className="absolute top-4 right-4 p-2 text-muted-foreground hover:text-foreground hover:bg-background rounded-lg transition-all"
+                              className="absolute top-3 right-3 p-1.5 text-muted-foreground hover:text-foreground rounded transition-colors"
                               title={language === 'ru' ? 'Редактировать' : 'Edit'}
                             >
                               <Pencil className="w-4 h-4" />
                             </button>
                           </div>
                           
-                          <div className="flex items-center justify-between mt-4">
+                          <div className="flex items-center justify-between mt-3">
                             <button 
                               onClick={actions.startOver}
-                              className="text-sm text-muted-foreground hover:text-primary transition-colors flex items-center gap-2 py-2 px-3 rounded-xl hover:bg-secondary"
+                              className="text-xs text-muted-foreground hover:text-foreground transition-colors flex items-center gap-1.5"
                             >
-                              <RotateCcw className="w-4 h-4" />
-                              {language === 'ru' ? 'Начать заново' : 'Start over'}
+                              <RotateCcw className="w-3.5 h-3.5" />
+                              {language === 'ru' ? 'Заново' : 'Start over'}
                             </button>
-                            <span className={`text-sm font-medium px-3 py-1.5 rounded-full ${
+                            <span className={`text-xs font-medium ${
                               state.prompt.length >= 10 
-                                ? 'text-success bg-success/10' 
-                                : 'text-muted-foreground bg-muted'
+                                ? 'text-primary' 
+                                : 'text-muted-foreground'
                             }`}>
                               {state.prompt.length >= 10 ? '✓ Ready' : `${state.prompt.length}/10`}
                             </span>
@@ -216,23 +177,19 @@ const Hero = () => {
                         onClick={handleLaunch}
                         disabled={!isLaunchEnabled}
                         size="lg"
-                        className={`w-full gap-3 text-base font-semibold rounded-xl h-14 transition-all ${
-                          isLaunchEnabled 
-                            ? 'bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg hover:shadow-glow hover:scale-[1.01]' 
-                            : 'bg-muted text-muted-foreground'
-                        }`}
+                        className="w-full gap-2 font-medium h-12"
                       >
-                        <Play className="w-5 h-5" />
+                        <Play className="w-4 h-4" />
                         {t('hero.launch')}
-                        <ArrowRight className="w-5 h-5" />
+                        <ArrowRight className="w-4 h-4" />
                       </Button>
 
                       {state.isEditing && (
-                        <div className="mt-4 flex justify-end">
-                          <span className={`text-sm font-medium px-3 py-1.5 rounded-full ${
+                        <div className="mt-3 flex justify-end">
+                          <span className={`text-xs ${
                             state.prompt.length >= 10 
-                              ? 'text-success bg-success/10' 
-                              : 'text-muted-foreground bg-muted'
+                              ? 'text-primary' 
+                              : 'text-muted-foreground'
                           }`}>
                             {state.prompt.length}/10+
                           </span>
@@ -247,7 +204,7 @@ const Hero = () => {
         </div>
       )}
 
-      {/* Simulator - Full Width */}
+      {/* Simulator */}
       {showSimulator && (
         <div className="relative pt-20 pb-16">
           <div className="container mx-auto px-4 max-w-7xl">
