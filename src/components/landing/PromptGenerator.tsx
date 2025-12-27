@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDemo } from '@/contexts/DemoContext';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,9 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/integrations/supabase/client';
 import { REGIONS, INDUSTRIES } from '@/lib/regionData';
+import DemoOnboarding from './DemoOnboarding';
+
+const ONBOARDING_KEY = 'helm-demo-onboarding-seen';
 
 interface PromptGeneratorProps {
   onUseCanon: () => void;
@@ -27,9 +30,23 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
   const [error, setError] = useState<string | null>(null);
   const [showRegionPicker, setShowRegionPicker] = useState(false);
   const [showIndustryPicker, setShowIndustryPicker] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   
   // Double-click protection
   const isGeneratingRef = useRef(false);
+  
+  // Show onboarding for first-time users
+  useEffect(() => {
+    const seen = localStorage.getItem(ONBOARDING_KEY);
+    if (!seen) {
+      setShowOnboarding(true);
+    }
+  }, []);
+  
+  const handleDismissOnboarding = () => {
+    setShowOnboarding(false);
+    localStorage.setItem(ONBOARDING_KEY, 'true');
+  };
 
   const handleQuickStart = async (mode: 'zero' | 'digitize') => {
     // Double-click protection
@@ -105,7 +122,12 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 relative">
+      {/* Onboarding for first-time users */}
+      {showOnboarding && (
+        <DemoOnboarding onDismiss={handleDismissOnboarding} />
+      )}
+      
       {/* Context Selectors - Clean inline design */}
       <div className="flex flex-wrap items-center justify-center gap-2">
         {/* Region Picker */}

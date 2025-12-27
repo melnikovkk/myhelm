@@ -2,12 +2,44 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useDemo } from '@/contexts/DemoContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Play, Loader2, Building2, Globe, Layers, Pencil } from 'lucide-react';
+import { Play, Loader2, Building2, Globe, Layers, Pencil, Check } from 'lucide-react';
 import BusinessTab from './BusinessTab';
 import RegionTab from './RegionTab';
 import CoverageTab from './CoverageTab';
 import BossDecisionModal from './BossDecisionModal';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
+// Loading step component with staggered animation
+const LoadingStep = ({ label, delay }: { label: string; delay: number }) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [isComplete, setIsComplete] = useState(false);
+  
+  useEffect(() => {
+    const showTimer = setTimeout(() => setIsVisible(true), delay);
+    const completeTimer = setTimeout(() => setIsComplete(true), delay + 600);
+    return () => {
+      clearTimeout(showTimer);
+      clearTimeout(completeTimer);
+    };
+  }, [delay]);
+  
+  return (
+    <div className={`flex items-center gap-3 transition-all duration-300 ${isVisible ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-4'}`}>
+      <div className={`w-5 h-5 rounded-full flex items-center justify-center transition-all ${
+        isComplete ? 'bg-success/20' : 'bg-primary/20'
+      }`}>
+        {isComplete ? (
+          <Check className="w-3 h-3 text-success" />
+        ) : (
+          <Loader2 className="w-3 h-3 text-primary animate-spin" />
+        )}
+      </div>
+      <span className={`text-sm transition-colors ${isComplete ? 'text-success' : 'text-foreground'}`}>
+        {label}
+      </span>
+    </div>
+  );
+};
 
 const BusinessSimulator = () => {
   const { t, language } = useLanguage();
@@ -21,7 +53,7 @@ const BusinessSimulator = () => {
   
   const [activeTab, setActiveTab] = useState('business');
 
-  // Loading state
+  // Loading state with progress simulation
   if (state.uiState === 'LAUNCHING') {
     return (
       <div className="mt-8 animate-fade-in">
@@ -32,6 +64,8 @@ const BusinessSimulator = () => {
                 <Loader2 className="w-10 h-10 text-primary animate-spin" />
               </div>
               <div className="absolute -inset-2 rounded-3xl bg-primary/10 animate-pulse" />
+              {/* Spinning ring */}
+              <div className="absolute -inset-4 rounded-3xl border-2 border-primary/20 border-t-primary/60 animate-spin" style={{ animationDuration: '2s' }} />
             </div>
             
             <h3 className="text-xl font-bold text-foreground text-center">
@@ -44,23 +78,33 @@ const BusinessSimulator = () => {
             {(state.region || state.industry) && (
               <div className="mt-3 flex flex-wrap items-center justify-center gap-2">
                 {state.industry && (
-                  <span className="px-2.5 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full">
+                  <span className="px-2.5 py-1 bg-accent/10 text-accent text-xs font-medium rounded-full animate-fade-in">
                     {language === 'ru' ? state.industry.labelRu : state.industry.labelEn}
                   </span>
                 )}
                 {state.region && (
-                  <span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                  <span className="px-2.5 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full animate-fade-in delay-100">
                     {language === 'ru' ? state.region.nameRu : state.region.nameEn}
                   </span>
                 )}
               </div>
             )}
             
-            <p className="mt-3 text-muted-foreground text-center max-w-sm text-sm">
-              {language === 'ru' 
-                ? 'AI генерирует структуру, процессы и операционную систему'
-                : 'AI is generating structure, processes, and operating system'}
-            </p>
+            {/* Loading steps */}
+            <div className="mt-6 space-y-2 w-full max-w-xs">
+              <LoadingStep 
+                label={language === 'ru' ? 'Анализ бизнес-модели' : 'Analyzing business model'} 
+                delay={0} 
+              />
+              <LoadingStep 
+                label={language === 'ru' ? 'Генерация структуры' : 'Generating structure'} 
+                delay={800} 
+              />
+              <LoadingStep 
+                label={language === 'ru' ? 'Создание операционной системы' : 'Creating operating system'} 
+                delay={1600} 
+              />
+            </div>
           </div>
         </div>
       </div>
