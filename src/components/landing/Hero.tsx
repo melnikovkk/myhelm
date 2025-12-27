@@ -5,7 +5,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Pencil, Play, ArrowRight, RotateCcw, Zap } from 'lucide-react';
 import BusinessSimulator from './BusinessSimulator';
 import PromptGenerator from './PromptGenerator';
-import heroAbstract from '@/assets/hero-abstract.jpg';
+import heroAbstract from '@/assets/hero-abstract-new.jpg';
+import dashboardPreview from '@/assets/dashboard-preview.png';
 
 const Hero = () => {
   const { t, language } = useLanguage();
@@ -37,55 +38,99 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen">
+    <section className="relative min-h-screen overflow-hidden">
       {/* Hero Background */}
-      <div className="absolute inset-0 overflow-hidden">
+      <div className="absolute inset-0">
         <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-8"
+          className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30 dark:opacity-40"
           style={{ backgroundImage: `url(${heroAbstract})` }}
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-background/98 to-background" />
-        <div className="absolute inset-0 surface-dots opacity-30" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background/60 via-background/90 to-background" />
+        <div className="absolute inset-0 surface-dots opacity-20" />
+        {/* Animated gradient orbs */}
+        <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] animate-pulse-slow pointer-events-none" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-accent/10 rounded-full blur-[100px] animate-float pointer-events-none" />
       </div>
       
       {/* Hero Content - Pre-simulator state */}
       {!showSimulator && (
         <div className="relative pt-24 pb-16 md:pt-32 md:pb-24 flex items-center min-h-screen">
           <div className="container mx-auto px-4">
-            <div className="max-w-4xl mx-auto text-center mb-12">
-              {/* Badge */}
-              <div 
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 opacity-0 animate-fade-in border border-primary/20" 
-                style={{ animationFillMode: 'forwards' }}
-              >
-                <Sparkles className="w-4 h-4" />
-                <span>AI-Powered Business Autopilot</span>
-                <Zap className="w-4 h-4" />
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+              {/* Left: Content */}
+              <div className="text-center lg:text-left">
+                {/* Badge */}
+                <div 
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8 opacity-0 animate-fade-in border border-primary/20 backdrop-blur-sm" 
+                  style={{ animationFillMode: 'forwards' }}
+                >
+                  <Sparkles className="w-4 h-4" />
+                  <span>AI-Powered Business Autopilot</span>
+                  <Zap className="w-4 h-4" />
+                </div>
+                
+                {/* Headline */}
+                <h1 
+                  className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-6 leading-[1.08] tracking-tight opacity-0 animate-fade-in-up" 
+                  style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}
+                >
+                  <span className="text-gradient">{t('hero.headline')}</span>
+                </h1>
+                
+                {/* Subheadline */}
+                <p 
+                  className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 opacity-0 animate-fade-in-up leading-relaxed mb-8" 
+                  style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}
+                >
+                  {t('hero.subheadline')}
+                </p>
+
+                {/* Stats row */}
+                <div 
+                  className="flex flex-wrap justify-center lg:justify-start gap-6 opacity-0 animate-fade-in-up"
+                  style={{ animationDelay: '300ms', animationFillMode: 'forwards' }}
+                >
+                  <div className="text-center lg:text-left">
+                    <div className="text-2xl md:text-3xl font-bold text-foreground">12</div>
+                    <div className="text-xs text-muted-foreground">{language === 'ru' ? 'Бизнес-доменов' : 'Business Domains'}</div>
+                  </div>
+                  <div className="w-px h-12 bg-border hidden sm:block" />
+                  <div className="text-center lg:text-left">
+                    <div className="text-2xl md:text-3xl font-bold text-success">100%</div>
+                    <div className="text-xs text-muted-foreground">{language === 'ru' ? 'Прозрачность' : 'Transparency'}</div>
+                  </div>
+                  <div className="w-px h-12 bg-border hidden sm:block" />
+                  <div className="text-center lg:text-left">
+                    <div className="text-2xl md:text-3xl font-bold text-accent">24/7</div>
+                    <div className="text-xs text-muted-foreground">{language === 'ru' ? 'Автопилот' : 'Autopilot'}</div>
+                  </div>
+                </div>
               </div>
-              
-              {/* Headline */}
-              <h1 
-                className="font-display text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-bold text-foreground mb-6 leading-[1.08] tracking-tight opacity-0 animate-fade-in-up" 
-                style={{ animationDelay: '100ms', animationFillMode: 'forwards' }}
+
+              {/* Right: Dashboard Preview */}
+              <div 
+                className="relative hidden lg:block opacity-0 animate-fade-in"
+                style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}
               >
-                <span className="text-gradient">{t('hero.headline')}</span>
-              </h1>
-              
-              {/* Subheadline */}
-              <p 
-                className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto opacity-0 animate-fade-in-up leading-relaxed" 
-                style={{ animationDelay: '200ms', animationFillMode: 'forwards' }}
-              >
-                {t('hero.subheadline')}
-              </p>
+                <div className="relative">
+                  <img 
+                    src={dashboardPreview} 
+                    alt="HELM Dashboard Preview" 
+                    className="w-full h-auto rounded-2xl shadow-2xl animate-float"
+                  />
+                  {/* Glow effect */}
+                  <div className="absolute -inset-4 bg-gradient-to-r from-primary/20 via-accent/10 to-primary/20 rounded-3xl blur-2xl -z-10" />
+                </div>
+              </div>
             </div>
 
-            <div className="max-w-xl mx-auto">
+            {/* Demo Card - Centered below */}
+            <div className="max-w-xl mx-auto mt-12 lg:mt-16">
               {/* Main Demo Card */}
               {(showWizard || state.prompt) && (
                 <div 
                   className="glass-card p-6 md:p-8 opacity-0 animate-scale-in" 
-                  style={{ animationDelay: '400ms', animationFillMode: 'forwards' }}
+                  style={{ animationDelay: '500ms', animationFillMode: 'forwards' }}
                 >
                   {/* Wizard Mode */}
                   {showWizard && (
