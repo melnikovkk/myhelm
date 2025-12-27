@@ -1,7 +1,6 @@
 import Navbar from '@/components/landing/Navbar';
 import Hero from '@/components/landing/Hero';
 import CoverageSummary from '@/components/landing/CoverageSummary';
-import WhatBecomesReal from '@/components/landing/WhatBecomesReal';
 import ProofSection from '@/components/landing/ProofSection';
 import WaitlistForm from '@/components/landing/WaitlistForm';
 import FAQ from '@/components/landing/FAQ';
@@ -16,7 +15,6 @@ const Index = () => {
         <main>
           <Hero />
           <CoverageSummary />
-          <WhatBecomesReal />
           <ProofSection />
           <WaitlistForm />
           <FAQ />

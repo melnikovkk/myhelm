@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Shield, Camera, FileCheck, Receipt, Lock } from 'lucide-react';
+import { Shield, Camera, FileCheck, Receipt, Lock, RotateCcw } from 'lucide-react';
 
 const ProofSection = forwardRef<HTMLElement>((_, ref) => {
   const { t, language } = useLanguage();
@@ -33,7 +33,7 @@ const ProofSection = forwardRef<HTMLElement>((_, ref) => {
           </p>
 
           {/* Proof items */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-12">
             {proofItems.map(({ icon: Icon, label }, i) => (
               <div 
                 key={i}
@@ -46,6 +46,19 @@ const ProofSection = forwardRef<HTMLElement>((_, ref) => {
                 <span className="text-sm text-foreground text-center group-hover:text-success transition-colors">{label}</span>
               </div>
             ))}
+          </div>
+
+          {/* Deterministic Replay highlight */}
+          <div className="glass-card p-6 max-w-md mx-auto border-primary/30">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center">
+                <RotateCcw className="w-5 h-5 text-primary" />
+              </div>
+              <h3 className="font-semibold text-foreground">{t('proof.replay')}</h3>
+            </div>
+            <p className="text-sm text-muted-foreground">
+              {t('proof.replay.desc')}
+            </p>
           </div>
         </div>
       </div>

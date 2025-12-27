@@ -2,9 +2,9 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { useDemo } from '@/contexts/DemoContext';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Button } from '@/components/ui/button';
-import { Play, Loader2, Building2, BarChart3, Pencil } from 'lucide-react';
+import { Play, Loader2, Building2, Globe, Layers, Pencil } from 'lucide-react';
 import BusinessTab from './BusinessTab';
-import RealityTab from './RealityTab';
+import RegionTab from './RegionTab';
 import CoverageTab from './CoverageTab';
 import BossDecisionModal from './BossDecisionModal';
 import { useState } from 'react';
@@ -91,16 +91,20 @@ const BusinessSimulator = () => {
         )}
       </div>
 
-      {/* Tabs */}
+      {/* Tabs: Business / Region / Coverage */}
       <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-        <TabsList className="w-full grid grid-cols-2 bg-secondary/50 rounded-xl p-1 mb-6">
+        <TabsList className="w-full grid grid-cols-3 bg-secondary/50 rounded-xl p-1 mb-6">
           <TabsTrigger value="business" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm gap-2">
             <Building2 className="w-4 h-4" />
-            {language === 'ru' ? 'Бизнес' : 'Business'}
+            {t('tab.business')}
           </TabsTrigger>
-          <TabsTrigger value="insights" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm gap-2">
-            <BarChart3 className="w-4 h-4" />
-            {language === 'ru' ? 'Инсайты' : 'Insights'}
+          <TabsTrigger value="region" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm gap-2">
+            <Globe className="w-4 h-4" />
+            {t('tab.region')}
+          </TabsTrigger>
+          <TabsTrigger value="coverage" className="rounded-lg data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all text-sm gap-2">
+            <Layers className="w-4 h-4" />
+            {t('tab.coverage')}
           </TabsTrigger>
         </TabsList>
 
@@ -108,8 +112,11 @@ const BusinessSimulator = () => {
           <BusinessTab />
         </TabsContent>
 
-        <TabsContent value="insights" className="mt-0 space-y-4">
-          <RealityTab prompt={state.prompt} region={state.region} industry={state.industry} />
+        <TabsContent value="region" className="mt-0">
+          <RegionTab prompt={state.prompt} region={state.region} industry={state.industry} />
+        </TabsContent>
+
+        <TabsContent value="coverage" className="mt-0">
           <CoverageTab />
         </TabsContent>
       </Tabs>
