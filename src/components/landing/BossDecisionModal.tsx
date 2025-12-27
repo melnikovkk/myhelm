@@ -77,14 +77,14 @@ const BossDecisionModal = () => {
           </DialogDescription>
         </DialogHeader>
         
-        <DialogFooter className="flex-col gap-2 mt-5">
-          {/* Primary actions row */}
-          <div className="flex gap-2 w-full">
+        <DialogFooter className="flex-col gap-3 mt-5 sm:flex-col">
+          {/* Action buttons - responsive grid */}
+          <div className="grid grid-cols-2 gap-2 w-full">
             <Button
               onClick={() => handleActionClick('approve')}
               disabled={!!selectedAction}
               size="lg"
-              className={`flex-1 gap-2 bg-success hover:bg-success/90 text-success-foreground h-12 font-semibold transition-all ${
+              className={`gap-2 bg-success hover:bg-success/90 text-success-foreground h-12 font-semibold transition-all ${
                 selectedAction === 'approve' ? 'scale-95 opacity-70' : 'hover:scale-[1.02]'
               }`}
             >
@@ -96,7 +96,7 @@ const BossDecisionModal = () => {
               disabled={!!selectedAction}
               variant="destructive"
               size="lg"
-              className={`flex-1 gap-2 h-12 font-semibold transition-all ${
+              className={`gap-2 h-12 font-semibold transition-all ${
                 selectedAction === 'deny' ? 'scale-95 opacity-70' : 'hover:scale-[1.02]'
               }`}
             >
@@ -105,7 +105,7 @@ const BossDecisionModal = () => {
             </Button>
           </div>
           
-          {/* Secondary action */}
+          {/* Secondary action - full width */}
           <Button
             onClick={() => handleActionClick('photo')}
             disabled={!!selectedAction}
