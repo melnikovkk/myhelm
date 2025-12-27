@@ -34,10 +34,8 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
   const [showIndustryPicker, setShowIndustryPicker] = useState(false);
   const [showOnboarding, setShowOnboarding] = useState(false);
   
-  // Double-click protection
   const isGeneratingRef = useRef(false);
   
-  // Show onboarding for first-time users
   useEffect(() => {
     const seen = localStorage.getItem(ONBOARDING_KEY);
     if (!seen) {
@@ -51,7 +49,6 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
   };
 
   const handleQuickStart = async (mode: 'zero' | 'digitize') => {
-    // Double-click protection
     if (isGeneratingRef.current || isGenerating) return;
     isGeneratingRef.current = true;
     
@@ -98,19 +95,18 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
 
   if (isGenerating) {
     return (
-      <div className="py-8 animate-fade-in">
-        <div className="flex flex-col items-center justify-center gap-4">
+      <div className="py-10 animate-fade-in">
+        <div className="flex flex-col items-center justify-center gap-5">
           <div className="relative">
-            <div className="w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center">
-              <Loader2 className="w-8 h-8 text-primary animate-spin" />
+            <div className="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center">
+              <Loader2 className="w-7 h-7 text-primary animate-spin" />
             </div>
-            <div className="absolute inset-0 rounded-full bg-primary/20 animate-ping" />
           </div>
           <div className="text-center">
             <h3 className="text-lg font-semibold text-foreground">
               {language === 'ru' ? 'Создаём ваш бизнес...' : 'Creating your business...'}
             </h3>
-            <p className="text-sm text-muted-foreground mt-1">
+            <p className="text-sm text-muted-foreground mt-2">
               {state.industry && state.region && (
                 language === 'ru' 
                   ? `${state.industry.labelRu} в ${state.region.nameRu}` 
@@ -125,41 +121,40 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
 
   return (
     <div className="space-y-6 relative">
-      {/* Onboarding hint banner - repositioned to not block CTAs */}
       {showOnboarding && (
         <DemoOnboarding onDismiss={handleDismissOnboarding} />
       )}
       
-      {/* Context Selectors - Clean inline design */}
+      {/* Context Selectors */}
       <div className="flex flex-wrap items-center justify-center gap-2">
         {/* Region Picker */}
         <div className="relative">
           <button
             onClick={() => { setShowRegionPicker(!showRegionPicker); setShowIndustryPicker(false); }}
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-secondary/50 hover:bg-secondary border border-border/50 hover:border-border transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-xl bg-secondary hover:bg-secondary/80 transition-all"
           >
             <Globe className="w-4 h-4 text-primary" />
             <span className="text-foreground font-medium">
               {state.region && (language === 'ru' ? state.region.nameRu : state.region.nameEn)}
             </span>
-            <span className="text-xs text-muted-foreground font-mono">{state.region?.currencySymbol}</span>
-            <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showRegionPicker ? 'rotate-180' : ''}`} />
+            <span className="text-xs text-muted-foreground">{state.region?.currencySymbol}</span>
+            <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showRegionPicker ? 'rotate-180' : ''}`} />
           </button>
           {showRegionPicker && (
-            <div className="absolute z-50 top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-card border border-border rounded-xl shadow-xl animate-scale-in">
-              <div className="p-1.5 max-h-64 overflow-y-auto">
+            <div className="absolute z-50 top-full left-1/2 -translate-x-1/2 mt-2 w-56 bg-card border border-border rounded-2xl animate-scale-in" style={{ boxShadow: 'var(--shadow-lg)' }}>
+              <div className="p-2 max-h-64 overflow-y-auto">
                 {REGIONS.map((region) => (
                   <button
                     key={region.code}
                     onClick={() => { actions.setRegion(region); setShowRegionPicker(false); }}
-                    className={`w-full px-3 py-2 text-left text-sm rounded-lg transition-colors flex items-center justify-between ${
+                    className={`w-full px-3 py-2.5 text-left text-sm rounded-xl transition-colors flex items-center justify-between ${
                       state.region?.code === region.code 
-                        ? 'bg-primary/10 text-primary' 
-                        : 'hover:bg-secondary/70 text-foreground'
+                        ? 'bg-primary/10 text-primary font-medium' 
+                        : 'hover:bg-secondary text-foreground'
                     }`}
                   >
                     <span>{language === 'ru' ? region.nameRu : region.nameEn}</span>
-                    <span className="text-xs text-muted-foreground font-mono">{region.currencySymbol}</span>
+                    <span className="text-xs text-muted-foreground">{region.currencySymbol}</span>
                   </button>
                 ))}
               </div>
@@ -167,31 +162,31 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
           )}
         </div>
 
-        <span className="text-muted-foreground text-sm">×</span>
+        <span className="text-muted-foreground">×</span>
 
         {/* Industry Picker */}
         <div className="relative">
           <button
             onClick={() => { setShowIndustryPicker(!showIndustryPicker); setShowRegionPicker(false); }}
-            className="inline-flex items-center gap-2 px-3 py-2 text-sm rounded-lg bg-secondary/50 hover:bg-secondary border border-border/50 hover:border-border transition-all"
+            className="inline-flex items-center gap-2 px-4 py-2.5 text-sm rounded-xl bg-secondary hover:bg-secondary/80 transition-all"
           >
             <Briefcase className="w-4 h-4 text-accent" />
             <span className="text-foreground font-medium">
               {state.industry && (language === 'ru' ? state.industry.labelRu : state.industry.labelEn)}
             </span>
-            <ChevronDown className={`w-3.5 h-3.5 text-muted-foreground transition-transform ${showIndustryPicker ? 'rotate-180' : ''}`} />
+            <ChevronDown className={`w-4 h-4 text-muted-foreground transition-transform ${showIndustryPicker ? 'rotate-180' : ''}`} />
           </button>
           {showIndustryPicker && (
-            <div className="absolute z-50 top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-card border border-border rounded-xl shadow-xl animate-scale-in">
-              <div className="p-1.5">
+            <div className="absolute z-50 top-full left-1/2 -translate-x-1/2 mt-2 w-48 bg-card border border-border rounded-2xl animate-scale-in" style={{ boxShadow: 'var(--shadow-lg)' }}>
+              <div className="p-2">
                 {INDUSTRIES.map((industry) => (
                   <button
                     key={industry.key}
                     onClick={() => { actions.setIndustry(industry); setShowIndustryPicker(false); }}
-                    className={`w-full px-3 py-2 text-left text-sm rounded-lg transition-colors ${
+                    className={`w-full px-3 py-2.5 text-left text-sm rounded-xl transition-colors ${
                       state.industry?.key === industry.key 
-                        ? 'bg-accent/10 text-accent' 
-                        : 'hover:bg-secondary/70 text-foreground'
+                        ? 'bg-accent/10 text-accent font-medium' 
+                        : 'hover:bg-secondary text-foreground'
                     }`}
                   >
                     {language === 'ru' ? industry.labelRu : industry.labelEn}
@@ -203,27 +198,25 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
         </div>
       </div>
 
-      {/* Main Action Buttons - Two clear paths */}
+      {/* Action Buttons */}
       <div className="space-y-3">
-        {/* Primary CTA: Start New Business */}
         <Button
           onClick={() => handleQuickStart('zero')}
           disabled={isGenerating}
           size="lg"
-          className="w-full gap-3 text-lg font-semibold h-14 rounded-xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/25 hover:shadow-primary/35 hover:scale-[1.02] transition-all duration-300"
+          className="w-full gap-3 text-base font-semibold h-14 rounded-2xl bg-primary text-primary-foreground hover:bg-primary/90 shadow-md hover:shadow-glow hover:scale-[1.01] transition-all"
         >
           <Rocket className="w-5 h-5" />
           {language === 'ru' ? 'Запустить новый бизнес' : 'Launch New Business'}
           <ArrowRight className="w-5 h-5" />
         </Button>
 
-        {/* Secondary CTA: Digitize Existing */}
         <Button
           onClick={() => handleQuickStart('digitize')}
           disabled={isGenerating}
           variant="outline"
           size="lg"
-          className="w-full gap-3 text-base font-medium h-12 rounded-xl border-2 border-accent/30 hover:border-accent hover:bg-accent/5 transition-all duration-300"
+          className="w-full gap-3 text-base font-medium h-12 rounded-2xl border-2 border-border hover:border-accent hover:bg-accent/5 transition-all"
         >
           <Zap className="w-5 h-5 text-accent" />
           {language === 'ru' ? 'Оцифровать существующий бизнес' : 'Digitize Existing Business'}
@@ -231,26 +224,25 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
       </div>
 
       {error && (
-        <div className="flex items-center justify-between p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+        <div className="flex items-center justify-between p-4 bg-destructive/10 border border-destructive/20 rounded-2xl">
           <p className="text-sm text-destructive">{error}</p>
           <button 
             onClick={() => setError(null)}
-            className="p-1.5 hover:bg-destructive/10 rounded-md transition-colors"
+            className="p-2 hover:bg-destructive/10 rounded-xl transition-colors"
           >
             <RefreshCw className="w-4 h-4 text-destructive" />
           </button>
         </div>
       )}
 
-      {/* Demo Example Link + Reset */}
-      <div className="relative flex items-center justify-center gap-3 pt-2">
-        <div className="absolute inset-x-0 top-1/2 h-px bg-border/50" />
+      {/* Demo Example + Reset */}
+      <div className="flex items-center justify-center gap-2 pt-2">
         <button 
           onClick={onUseCanon}
-          className="relative px-4 py-1.5 text-xs text-muted-foreground bg-card hover:text-primary hover:bg-primary/5 rounded-full border border-border/50 hover:border-primary/30 transition-all flex items-center gap-1.5"
+          className="px-4 py-2 text-sm text-muted-foreground hover:text-primary bg-secondary/50 hover:bg-primary/5 rounded-full transition-all flex items-center gap-2"
         >
-          <Sparkles className="w-3.5 h-3.5" />
-          {language === 'ru' ? 'Или посмотрите пример' : 'Or see a demo example'}
+          <Sparkles className="w-4 h-4" />
+          {language === 'ru' ? 'Посмотреть пример' : 'See example'}
         </button>
         <button 
           onClick={() => {
@@ -258,10 +250,10 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
             localStorage.removeItem(ONBOARDING_KEY);
             window.location.reload();
           }}
-          className="relative px-3 py-1.5 text-xs text-muted-foreground bg-card hover:text-destructive hover:bg-destructive/5 rounded-full border border-border/50 hover:border-destructive/30 transition-all flex items-center gap-1.5"
+          className="px-3 py-2 text-sm text-muted-foreground hover:text-destructive bg-secondary/50 hover:bg-destructive/5 rounded-full transition-all flex items-center gap-2"
           title={language === 'ru' ? 'Сбросить демо' : 'Reset demo'}
         >
-          <RotateCcw className="w-3.5 h-3.5" />
+          <RotateCcw className="w-4 h-4" />
           {language === 'ru' ? 'Сброс' : 'Reset'}
         </button>
       </div>
