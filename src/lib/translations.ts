@@ -306,14 +306,14 @@ export const translations = {
     ru: 'Генерируем брифинг...',
   },
 
-  // Coverage Map - CORRECTED POSITIONING
+  // Coverage Map - 12 DOMAINS
   'coverage.title': {
-    en: '8-Domain Business Coverage',
-    ru: 'Покрытие бизнеса из 8 доменов',
+    en: '12-Domain Business Coverage',
+    ru: 'Покрытие бизнеса из 12 доменов',
   },
   'coverage.subtitle': {
-    en: 'HELM builds your Business Program across every domain. CEO decisions only when risk is high — always with proof.',
-    ru: 'HELM строит твою Бизнес-Программу по всем доменам. Решения CEO только при высоких рисках — всегда с доказательствами.',
+    en: 'HELM builds your Business Program across every domain. CEO decides only when risk is high — always with proof.',
+    ru: 'HELM строит твою Бизнес-Программу по всем доменам. CEO решает только при высоких рисках — всегда с доказательствами.',
   },
   'coverage.runs': {
     en: 'Runs',
@@ -327,7 +327,62 @@ export const translations = {
     en: 'Proof',
     ru: 'Доказательства',
   },
-  // 8 Domains
+  'coverage.expand': {
+    en: 'Click to see details',
+    ru: 'Нажми для деталей',
+  },
+
+  // 12 Domain L1 Names
+  'coverage.domain.gtm': {
+    en: 'Go-to-Market',
+    ru: 'Выход на рынок',
+  },
+  'coverage.domain.customer': {
+    en: 'Customer Lifecycle',
+    ru: 'Жизненный цикл клиента',
+  },
+  'coverage.domain.delivery': {
+    en: 'Delivery & Ops',
+    ru: 'Доставка и операции',
+  },
+  'coverage.domain.supply': {
+    en: 'Supply & Procurement',
+    ru: 'Закупки и поставки',
+  },
+  'coverage.domain.money': {
+    en: 'Money & Revenue',
+    ru: 'Деньги и выручка',
+  },
+  'coverage.domain.accounting': {
+    en: 'Accounting & Reporting',
+    ru: 'Учёт и отчётность',
+  },
+  'coverage.domain.legal': {
+    en: 'Legal & Policies',
+    ru: 'Право и политики',
+  },
+  'coverage.domain.risk': {
+    en: 'Risk & Controls',
+    ru: 'Риски и контроль',
+  },
+  'coverage.domain.people': {
+    en: 'People & Workforce',
+    ru: 'Люди и персонал',
+  },
+  'coverage.domain.assets': {
+    en: 'Assets & Inventory',
+    ru: 'Активы и инвентарь',
+  },
+  'coverage.domain.support': {
+    en: 'Support & Recovery',
+    ru: 'Поддержка и восстановление',
+  },
+  'coverage.domain.data': {
+    en: 'Data & Security',
+    ru: 'Данные и безопасность',
+  },
+
+  // Old 8-domain keys (keep for backwards compat in CoverageTab)
   'coverage.domain.sell': {
     en: 'Sell',
     ru: 'Продажа',
@@ -336,29 +391,67 @@ export const translations = {
     en: 'Deliver',
     ru: 'Доставка',
   },
-  'coverage.domain.money': {
-    en: 'Money',
-    ru: 'Деньги',
-  },
-  'coverage.domain.support': {
-    en: 'Support',
-    ru: 'Поддержка',
-  },
-  'coverage.domain.people': {
-    en: 'People',
-    ru: 'Люди',
-  },
-  'coverage.domain.legal': {
-    en: 'Legal & Policies',
-    ru: 'Право и политики',
-  },
   'coverage.domain.reporting': {
     en: 'Reporting',
     ru: 'Отчётность',
   },
-  'coverage.domain.assets': {
-    en: 'Assets & Supplies',
-    ru: 'Активы и закупки',
+
+  // Region Tab - 7 Axes
+  'region.axis.localization': {
+    en: 'Localization',
+    ru: 'Локализация',
+  },
+  'region.axis.taxes': {
+    en: 'Taxes',
+    ru: 'Налоги',
+  },
+  'region.axis.invoicing': {
+    en: 'Invoicing & E-Invoicing',
+    ru: 'Счета и электронный документооборот',
+  },
+  'region.axis.payments': {
+    en: 'Payment Rails',
+    ru: 'Платёжные рельсы',
+  },
+  'region.axis.accounting': {
+    en: 'Accounting Exports',
+    ru: 'Экспорт в бухгалтерию',
+  },
+  'region.axis.privacy': {
+    en: 'Privacy & Data Residency',
+    ru: 'Приватность и хранение данных',
+  },
+  'region.axis.workforce': {
+    en: 'Workforce & Payroll',
+    ru: 'Персонал и выплаты',
+  },
+  'region.generates': {
+    en: 'HELM generates',
+    ru: 'HELM генерирует',
+  },
+  'region.ceo.decides': {
+    en: 'CEO decides',
+    ru: 'CEO решает',
+  },
+  'region.proof.produced': {
+    en: 'Proof produced',
+    ru: 'Доказательства',
+  },
+  'region.readiness.ready': {
+    en: 'Ready',
+    ru: 'Готово',
+  },
+  'region.readiness.planned': {
+    en: 'Planned',
+    ru: 'Планируется',
+  },
+  'region.readiness.human': {
+    en: 'Human-bridge',
+    ru: 'Human-bridge',
+  },
+  'region.select': {
+    en: 'Select a region above to see jurisdiction details',
+    ru: 'Выбери регион выше для деталей юрисдикции',
   },
 
   // What becomes real section
@@ -381,12 +474,20 @@ export const translations = {
 
   // Proof Section
   'proof.title': {
-    en: 'The Evidence Vault',
-    ru: 'Хранилище доказательств',
+    en: 'Proof-First Architecture',
+    ru: 'Архитектура с доказательствами',
   },
   'proof.subtitle': {
-    en: 'Every decision, every action — recorded with proof.',
-    ru: 'Каждое решение, каждое действие — записано с доказательством.',
+    en: 'Every decision, every action — recorded with proof. Deterministic replay. Immutable audit.',
+    ru: 'Каждое решение, каждое действие — записано с доказательством. Детерминированный повтор. Неизменяемый аудит.',
+  },
+  'proof.replay': {
+    en: 'Deterministic Replay',
+    ru: 'Детерминированный повтор',
+  },
+  'proof.replay.desc': {
+    en: 'Every test day can be replayed exactly as it happened',
+    ru: 'Каждый тестовый день можно повторить в точности как было',
   },
 
   // Waitlist Form
@@ -427,7 +528,7 @@ export const translations = {
     ru: 'Демо-режим: Подключи бэкенд для сбора заявок',
   },
 
-  // FAQ - CORRECTED POSITIONING
+  // FAQ - UPDATED FOR 12 DOMAINS + GLOBAL
   'faq.title': {
     en: 'Questions',
     ru: 'Вопросы',
@@ -437,8 +538,8 @@ export const translations = {
     ru: 'Что можно построить с HELM?',
   },
   'faq.a1': {
-    en: 'HELM builds and runs a complete Business Program for any online, offline, or hybrid business. Start from zero with just an idea, or digitize an existing business you already run. HELM handles 8 core domains: Sell, Deliver, Money, Support, People, Legal/Policies, Reporting, and Assets — with CEO-only decisions for high-risk moments, always recorded with proof.',
-    ru: 'HELM создаёт и ведёт полную Бизнес-Программу для любого онлайн, офлайн или гибридного бизнеса. Начни с нуля с одной идеи или оцифруй существующий бизнес. HELM покрывает 8 ключевых доменов: Продажи, Доставка, Деньги, Поддержка, Люди, Право/Политики, Отчётность и Активы — с решениями CEO только для важных моментов, всегда с доказательствами.',
+    en: 'HELM builds and runs a complete Business Program for any online, offline, or hybrid business. It covers all 12 business domains — from Go-to-Market to Data & Security. Start from zero with just an idea, or digitize an existing business. CEO-only decisions for high-risk moments, always recorded with proof.',
+    ru: 'HELM создаёт и ведёт полную Бизнес-Программу для любого онлайн, офлайн или гибридного бизнеса. Покрывает все 12 бизнес-доменов — от Выхода на рынок до Данных и безопасности. Начни с нуля с идеи или оцифруй существующий бизнес. Решения CEO только при высоких рисках — всегда с доказательствами.',
   },
   'faq.q2': {
     en: 'Do I need technical skills?',
@@ -453,8 +554,8 @@ export const translations = {
     ru: 'Чем это отличается от других инструментов?',
   },
   'faq.a3': {
-    en: 'Other tools help you organize tasks or automate parts. HELM is a business builder: it creates your entire operating system from a prompt, executes it end-to-end, and gives you proof of every action and decision. You stay CEO — the system handles execution.',
-    ru: 'Другие инструменты помогают организовать задачи или автоматизировать части. HELM — это конструктор бизнеса: создаёт всю операционную систему из промпта, исполняет её от и до и даёт доказательства каждого действия и решения. Ты остаёшься CEO — система занимается исполнением.',
+    en: 'Other tools help you organize tasks or manage parts of a business. HELM is a business builder: it creates your entire operating system from a prompt, executes it end-to-end across 12 domains, and gives you proof of every action and decision. You stay CEO — the system handles execution.',
+    ru: 'Другие инструменты помогают организовать задачи или управлять частями бизнеса. HELM — это конструктор бизнеса: создаёт всю операционную систему из промпта, исполняет её от и до по 12 доменам и даёт доказательства каждого действия и решения. Ты остаёшься CEO — система занимается исполнением.',
   },
   'faq.q4': {
     en: 'When does it launch?',
@@ -469,17 +570,16 @@ export const translations = {
     ru: 'Что такое контракт покрытия?',
   },
   'faq.a5': {
-    en: 'HELM covers 8 business domains. Some capabilities are ready now, others are planned, and complex edge cases use a human-bridge until automated. We are transparent about what is available today.',
-    ru: 'HELM покрывает 8 бизнес-доменов. Некоторые возможности готовы сейчас, другие запланированы, а сложные случаи используют human-bridge до автоматизации. Мы прозрачны о том, что доступно сегодня.',
+    en: 'HELM covers 12 business domains with 72+ capabilities. Some are Ready now, others Planned, and complex edge cases use Human-bridge until fully automated. We\'re transparent about readiness for every capability in every region.',
+    ru: 'HELM покрывает 12 бизнес-доменов с 72+ возможностями. Некоторые Готовы сейчас, другие Планируются, сложные случаи используют Human-bridge до полной автоматизации. Мы прозрачны о готовности каждой функции в каждом регионе.',
   },
-  // Global FAQ questions
   'faq.q6': {
     en: 'How does this work in my country?',
     ru: 'Как это работает в моей стране?',
   },
   'faq.a6': {
-    en: 'HELM adapts to your region via Jurisdiction Packs — local overlays that configure invoices, taxes, payments, privacy, and payroll rules. Select your country in the demo to see what\'s Ready, Planned, or Human-bridge for your region.',
-    ru: 'HELM адаптируется к вашему региону через Юрисдикционные пакеты — локальные настройки счетов, налогов, платежей, приватности и выплат. Выбери страну в демо, чтобы увидеть что Готово, Планируется или через Human-bridge для твоего региона.',
+    en: 'HELM adapts to your region via Jurisdiction Packs — local overlays that configure invoices, taxes, payments, privacy, accounting exports, and payroll rules. Select your country in the demo Region tab to see 7 readiness axes: Localization, Taxes, Invoicing, Payments, Accounting, Privacy, Workforce.',
+    ru: 'HELM адаптируется к вашему региону через Юрисдикционные пакеты — локальные настройки счетов, налогов, платежей, приватности, экспорта в бухгалтерию и выплат. Выбери страну во вкладке Регион демо, чтобы увидеть 7 осей готовности: Локализация, Налоги, Счета, Платежи, Бухгалтерия, Приватность, Персонал.',
   },
   'faq.q7': {
     en: 'How do taxes and invoices change per region?',
@@ -498,15 +598,31 @@ export const translations = {
     ru: 'Да. HELM ведёт гибридный бизнес — онлайн бронирования, физическая доставка, цифровые платежи. Бизнес-Программа адаптируется к вашим каналам и синхронизирует всё в одну операционную систему.',
   },
   'faq.q9': {
-    en: 'What\'s ready now vs planned vs human-bridge?',
-    ru: 'Что готово сейчас vs планируется vs human-bridge?',
+    en: 'What\'s Ready vs Planned vs Human-bridge?',
+    ru: 'Что значит Готово vs Планируется vs Human-bridge?',
   },
   'faq.a9': {
-    en: 'Ready = fully automated, works today. Planned = in development, ETA shown. Human-bridge = complex edge cases handled by humans until automated. We\'re transparent about readiness for every capability in every region.',
-    ru: 'Готово = полностью автоматизировано, работает сегодня. Планируется = в разработке, показан срок. Human-bridge = сложные случаи обрабатываются людьми до автоматизации. Мы прозрачны о готовности каждой функции в каждом регионе.',
+    en: 'Ready = fully operational, works today. Planned = in development, ETA shown. Human-bridge = complex edge cases handled by humans until fully automated. We\'re transparent about readiness for every capability in every region.',
+    ru: 'Готово = полностью работает сегодня. Планируется = в разработке, показан срок. Human-bridge = сложные случаи обрабатываются людьми до полной автоматизации. Мы прозрачны о готовности каждой функции в каждом регионе.',
+  },
+  'faq.q10': {
+    en: 'What industries does it support?',
+    ru: 'Какие отрасли поддерживаются?',
+  },
+  'faq.a10': {
+    en: 'HELM supports 8 industry packs: Service, E-commerce, Retail, Healthcare, Manufacturing, Digital Products, Logistics, and Custom. Each pack includes industry-specific compliance notes, typical offers, and regional adaptations.',
+    ru: 'HELM поддерживает 8 отраслевых пакетов: Услуги, E-commerce, Розница, Здравоохранение, Производство, Цифровые продукты, Логистика и Другое. Каждый пакет включает отраслевые требования, типичные предложения и региональные адаптации.',
+  },
+  'faq.q11': {
+    en: 'What proof do I get?',
+    ru: 'Какие доказательства я получу?',
+  },
+  'faq.a11': {
+    en: 'Photo confirmations, signed decisions, receipts & transactions, immutable audit trails. Every action is timestamped and linked to the decision that triggered it. Test days can be replayed exactly as they happened.',
+    ru: 'Фото подтверждения, подписанные решения, чеки и транзакции, неизменяемые аудит-трейлы. Каждое действие имеет временную метку и связано с решением, которое его вызвало. Тестовые дни можно повторить в точности как было.',
   },
 
-  // Footer - CORRECTED POSITIONING
+  // Footer
   'footer.tagline': {
     en: 'The business builder. You stay CEO.',
     ru: 'Конструктор бизнеса. Ты остаёшься CEO.',

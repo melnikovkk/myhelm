@@ -1,20 +1,26 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKey } from '@/lib/translations';
 import { 
-  ShoppingCart, Truck, Wallet, HeadphonesIcon, 
-  Users, Scale, BarChart3, Package,
+  Megaphone, Users, Truck, ShoppingCart, 
+  Wallet, BarChart3, Scale, Shield,
+  UserCheck, Package, HeadphonesIcon, Lock,
   CheckCircle, Brain, FileCheck
 } from 'lucide-react';
 
+// 12 Business Domains
 const DOMAINS = [
-  { key: 'sell', icon: ShoppingCart, runsCount: 3, decidesCount: 1, proofCount: 2 },
-  { key: 'deliver', icon: Truck, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'gtm', icon: Megaphone, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'customer', icon: Users, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'delivery', icon: Truck, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'supply', icon: ShoppingCart, runsCount: 3, decidesCount: 1, proofCount: 2 },
   { key: 'money', icon: Wallet, runsCount: 3, decidesCount: 1, proofCount: 2 },
-  { key: 'support', icon: HeadphonesIcon, runsCount: 3, decidesCount: 1, proofCount: 2 },
-  { key: 'people', icon: Users, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'accounting', icon: BarChart3, runsCount: 3, decidesCount: 1, proofCount: 2 },
   { key: 'legal', icon: Scale, runsCount: 3, decidesCount: 1, proofCount: 2 },
-  { key: 'reporting', icon: BarChart3, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'risk', icon: Shield, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'people', icon: UserCheck, runsCount: 3, decidesCount: 1, proofCount: 2 },
   { key: 'assets', icon: Package, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'support', icon: HeadphonesIcon, runsCount: 3, decidesCount: 1, proofCount: 2 },
+  { key: 'data', icon: Lock, runsCount: 3, decidesCount: 1, proofCount: 2 },
 ] as const;
 
 const CoverageSummary = () => {
@@ -32,18 +38,18 @@ const CoverageSummary = () => {
           </p>
         </div>
 
-        {/* Compact 8-Domain Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-2 max-w-5xl mx-auto">
+        {/* Compact 12-Domain Grid */}
+        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-2 max-w-5xl mx-auto">
           {DOMAINS.map(({ key, icon: Icon, runsCount, decidesCount, proofCount }, i) => (
             <div 
               key={key}
-              className="glass-card p-3 flex flex-col items-center gap-2 hover:border-primary/30 transition-all group cursor-default"
-              style={{ animationDelay: `${i * 50}ms` }}
+              className="glass-card p-3 flex flex-col items-center gap-2 hover:border-primary/30 transition-all group cursor-default opacity-0 animate-fade-in-up"
+              style={{ animationDelay: `${i * 40}ms`, animationFillMode: 'forwards' }}
             >
               <div className="w-10 h-10 rounded-xl bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
                 <Icon className="w-5 h-5 text-primary" />
               </div>
-              <span className="text-xs text-center font-medium text-foreground">
+              <span className="text-xs text-center font-medium text-foreground leading-tight">
                 {t(`coverage.domain.${key}` as TranslationKey)}
               </span>
               {/* Mini indicators */}
