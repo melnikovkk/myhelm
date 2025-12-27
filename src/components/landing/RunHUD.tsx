@@ -170,16 +170,20 @@ const RunHUD = () => {
         </div>
       </div>
 
-      {/* Three-column HUD layout */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-        {/* Left: Quest Log */}
+      {/* Three-column HUD layout - stacks on mobile */}
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+        {/* Quest Log - always visible */}
         <QuestLog />
 
-        {/* Center: CEO Attention */}
-        <CeoAttention />
+        {/* CEO Attention - most important on mobile, shown first on larger screens */}
+        <div className="order-first md:order-none">
+          <CeoAttention />
+        </div>
 
-        {/* Right: Mini-map */}
-        <MiniMap activeDomain={activeDomain} />
+        {/* Mini-map - hidden on mobile, shown last */}
+        <div className="hidden md:block">
+          <MiniMap activeDomain={activeDomain} />
+        </div>
       </div>
     </div>
   );

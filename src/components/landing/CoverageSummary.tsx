@@ -1,3 +1,4 @@
+import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { TranslationKey } from '@/lib/translations';
 import { 
@@ -23,11 +24,11 @@ const DOMAINS = [
   { key: 'data', icon: Lock, runsCount: 3, decidesCount: 1, proofCount: 2 },
 ] as const;
 
-const CoverageSummary = () => {
+const CoverageSummary = forwardRef<HTMLElement>((_, ref) => {
   const { t, language } = useLanguage();
 
   return (
-    <section className="py-12 md:py-20 border-b border-border/30">
+    <section ref={ref} className="py-12 md:py-20 border-b border-border/30">
       <div className="container mx-auto px-4">
         <div className="text-center mb-8">
           <h2 className="text-2xl md:text-3xl font-bold text-foreground mb-3">
@@ -89,6 +90,8 @@ const CoverageSummary = () => {
       </div>
     </section>
   );
-};
+});
+
+CoverageSummary.displayName = 'CoverageSummary';
 
 export default CoverageSummary;
