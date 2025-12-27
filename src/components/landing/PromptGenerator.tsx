@@ -11,8 +11,10 @@ import {
   Briefcase,
   ChevronDown,
   RefreshCw,
-  Sparkles
+  Sparkles,
+  RotateCcw
 } from 'lucide-react';
+import { clearPersistedSession } from '@/lib/demoStore';
 import { supabase } from '@/integrations/supabase/client';
 import { REGIONS, INDUSTRIES } from '@/lib/regionData';
 import DemoOnboarding from './DemoOnboarding';
@@ -240,8 +242,8 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
         </div>
       )}
 
-      {/* Demo Example Link */}
-      <div className="relative flex items-center justify-center pt-2">
+      {/* Demo Example Link + Reset */}
+      <div className="relative flex items-center justify-center gap-3 pt-2">
         <div className="absolute inset-x-0 top-1/2 h-px bg-border/50" />
         <button 
           onClick={onUseCanon}
@@ -249,6 +251,18 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
         >
           <Sparkles className="w-3.5 h-3.5" />
           {language === 'ru' ? 'Или посмотрите пример' : 'Or see a demo example'}
+        </button>
+        <button 
+          onClick={() => {
+            clearPersistedSession();
+            localStorage.removeItem(ONBOARDING_KEY);
+            window.location.reload();
+          }}
+          className="relative px-3 py-1.5 text-xs text-muted-foreground bg-card hover:text-destructive hover:bg-destructive/5 rounded-full border border-border/50 hover:border-destructive/30 transition-all flex items-center gap-1.5"
+          title={language === 'ru' ? 'Сбросить демо' : 'Reset demo'}
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          {language === 'ru' ? 'Сброс' : 'Reset'}
         </button>
       </div>
     </div>
