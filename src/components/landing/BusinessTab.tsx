@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDemo } from '@/contexts/DemoContext';
 import { 
@@ -11,7 +12,9 @@ import {
   Trophy,
   Target,
   Sparkles,
-  Package
+  Package,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import RunHUD from './RunHUD';
 import ReplayControls from './ReplayControls';
@@ -20,6 +23,7 @@ import ConfettiCelebration from './ConfettiCelebration';
 const BusinessTab = () => {
   const { t, language } = useLanguage();
   const { state, isReplay, isDayComplete } = useDemo();
+  const [expandedLoop, setExpandedLoop] = useState<string | null>(null);
   
   const data = state.business;
   if (!data) return null;
@@ -89,13 +93,29 @@ const BusinessTab = () => {
             ))}
           </div>
 
-          <div className="space-y-2">
-            {Object.entries(data.loops).slice(0, 4).map(([key, value]) => (
-              <div key={key} className="p-3 bg-secondary/40 rounded-xl">
-                <span className="text-xs font-semibold text-accent uppercase tracking-wide">{key}</span>
-                <p className="text-xs text-muted-foreground line-clamp-2 mt-1">{value}</p>
-              </div>
-            ))}
+          <div className="space-y-2 max-h-[280px] overflow-y-auto pr-1 scrollbar-thin">
+            {Object.entries(data.loops).slice(0, 4).map(([key, value]) => {
+              const isExpanded = expandedLoop === key;
+              return (
+                <div 
+                  key={key} 
+                  className="p-3 bg-secondary/40 rounded-xl cursor-pointer hover:bg-secondary/60 transition-colors"
+                  onClick={() => setExpandedLoop(isExpanded ? null : key)}
+                >
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-accent uppercase tracking-wide">{key}</span>
+                    {isExpanded ? (
+                      <ChevronUp className="w-3.5 h-3.5 text-muted-foreground" />
+                    ) : (
+                      <ChevronDown className="w-3.5 h-3.5 text-muted-foreground" />
+                    )}
+                  </div>
+                  <p className={`text-xs text-muted-foreground mt-1 transition-all duration-200 ${
+                    isExpanded ? '' : 'line-clamp-2'
+                  }`}>{value}</p>
+                </div>
+              );
+            })}
           </div>
         </div>
 
