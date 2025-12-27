@@ -1,88 +1,126 @@
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* HELM Design System - Dark Command Center Theme */
+/* HELM Design System - Revolut-inspired Clean Fintech */
 @layer base {
   :root {
-    /* Base dark palette */
-    --background: 222 47% 5%;
-    --foreground: 210 40% 96%;
+    /* Light, clean backgrounds */
+    --background: 0 0% 100%;
+    --foreground: 220 13% 11%;
 
-    /* Card surfaces - slightly elevated */
-    --card: 222 47% 7%;
-    --card-foreground: 210 40% 96%;
+    /* Card surfaces - subtle elevation */
+    --card: 0 0% 100%;
+    --card-foreground: 220 13% 11%;
 
     /* Popover/dropdown surfaces */
-    --popover: 222 47% 8%;
-    --popover-foreground: 210 40% 96%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 13% 11%;
 
-    /* Primary - Cyan/Electric Blue for "tech" feel */
-    --primary: 192 91% 54%;
-    --primary-foreground: 222 47% 5%;
+    /* Primary - HELM's signature cyan */
+    --primary: 192 100% 40%;
+    --primary-foreground: 0 0% 100%;
 
-    /* Secondary - Muted for less emphasis */
-    --secondary: 222 30% 14%;
-    --secondary-foreground: 210 30% 80%;
+    /* Secondary - Clean gray */
+    --secondary: 220 10% 96%;
+    --secondary-foreground: 220 13% 40%;
 
     /* Muted elements */
-    --muted: 222 30% 12%;
-    --muted-foreground: 215 20% 55%;
+    --muted: 220 10% 95%;
+    --muted-foreground: 220 10% 50%;
 
-    /* Accent - Amber/Gold for decisions/CEO actions */
-    --accent: 38 92% 50%;
-    --accent-foreground: 222 47% 5%;
+    /* Accent - Warm action color */
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
 
-    /* Destructive - For denials/errors */
-    --destructive: 0 72% 51%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive - For errors */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
 
-    /* Success - For approvals/confirmations */
-    --success: 142 71% 45%;
-    --success-foreground: 222 47% 5%;
+    /* Success - For confirmations */
+    --success: 152 76% 40%;
+    --success-foreground: 0 0% 100%;
 
     /* Borders and inputs */
-    --border: 222 30% 18%;
-    --input: 222 30% 14%;
-    --ring: 192 91% 54%;
+    --border: 220 13% 90%;
+    --input: 220 13% 93%;
+    --ring: 192 100% 40%;
 
-    /* Radius */
-    --radius: 0.625rem;
+    /* Radius - Revolut style large curves */
+    --radius: 1.25rem;
 
-    /* Sidebar (if used) */
-    --sidebar-background: 222 47% 6%;
-    --sidebar-foreground: 210 40% 96%;
-    --sidebar-primary: 192 91% 54%;
-    --sidebar-primary-foreground: 222 47% 5%;
-    --sidebar-accent: 222 30% 14%;
-    --sidebar-accent-foreground: 210 40% 96%;
-    --sidebar-border: 222 30% 18%;
-    --sidebar-ring: 192 91% 54%;
+    /* Sidebar */
+    --sidebar-background: 220 13% 98%;
+    --sidebar-foreground: 220 13% 11%;
+    --sidebar-primary: 192 100% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 220 10% 94%;
+    --sidebar-accent-foreground: 220 13% 11%;
+    --sidebar-border: 220 13% 90%;
+    --sidebar-ring: 192 100% 40%;
 
     /* Custom HELM tokens */
-    --glow-primary: 192 91% 54%;
-    --glow-accent: 38 92% 50%;
-    --glow-success: 142 71% 45%;
+    --glow-primary: 192 100% 40%;
+    --glow-accent: 25 95% 53%;
+    --glow-success: 152 76% 40%;
 
-    /* Gradients as custom properties */
-    --gradient-primary: linear-gradient(135deg, hsl(192 91% 54%) 0%, hsl(210 100% 60%) 100%);
-    --gradient-accent: linear-gradient(135deg, hsl(38 92% 50%) 0%, hsl(25 95% 55%) 100%);
-    --gradient-dark: linear-gradient(180deg, hsl(222 47% 7%) 0%, hsl(222 47% 4%) 100%);
-    --gradient-glass: linear-gradient(135deg, hsl(222 30% 14% / 0.8) 0%, hsl(222 30% 10% / 0.6) 100%);
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(192 100% 40%) 0%, hsl(200 100% 50%) 100%);
+    --gradient-accent: linear-gradient(135deg, hsl(25 95% 53%) 0%, hsl(35 95% 55%) 100%);
+    --gradient-surface: linear-gradient(180deg, hsl(220 13% 98%) 0%, hsl(0 0% 100%) 100%);
+    --gradient-subtle: linear-gradient(135deg, hsl(220 10% 97%) 0%, hsl(220 10% 99%) 100%);
 
-    /* Shadows */
-    --shadow-glow: 0 0 30px hsl(192 91% 54% / 0.3);
-    --shadow-glow-accent: 0 0 30px hsl(38 92% 50% / 0.3);
-    --shadow-elevated: 0 8px 32px hsl(222 47% 3% / 0.6);
-    --shadow-card: 0 4px 24px hsl(222 47% 3% / 0.4);
+    /* Shadows - Subtle, layered */
+    --shadow-sm: 0 1px 2px hsl(220 13% 11% / 0.04);
+    --shadow-md: 0 4px 12px hsl(220 13% 11% / 0.06);
+    --shadow-lg: 0 8px 30px hsl(220 13% 11% / 0.08);
+    --shadow-xl: 0 16px 50px hsl(220 13% 11% / 0.12);
+    --shadow-glow: 0 4px 20px hsl(192 100% 40% / 0.2);
+    --shadow-glow-accent: 0 4px 20px hsl(25 95% 53% / 0.2);
   }
 
-  /* Force dark mode only */
-  .dark,
-  :root {
-    color-scheme: dark;
+  .dark {
+    /* Dark mode support */
+    --background: 220 20% 8%;
+    --foreground: 0 0% 98%;
+    --card: 220 20% 10%;
+    --card-foreground: 0 0% 98%;
+    --popover: 220 20% 10%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 192 100% 50%;
+    --primary-foreground: 220 20% 8%;
+    --secondary: 220 15% 18%;
+    --secondary-foreground: 220 10% 80%;
+    --muted: 220 15% 15%;
+    --muted-foreground: 220 10% 55%;
+    --accent: 25 95% 53%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 152 76% 45%;
+    --success-foreground: 220 20% 8%;
+    --border: 220 15% 20%;
+    --input: 220 15% 18%;
+    --ring: 192 100% 50%;
+    --sidebar-background: 220 20% 7%;
+    --sidebar-foreground: 0 0% 98%;
+    --sidebar-primary: 192 100% 50%;
+    --sidebar-primary-foreground: 220 20% 8%;
+    --sidebar-accent: 220 15% 15%;
+    --sidebar-accent-foreground: 0 0% 98%;
+    --sidebar-border: 220 15% 20%;
+    --sidebar-ring: 192 100% 50%;
+    --glow-primary: 192 100% 50%;
+    --glow-accent: 25 95% 53%;
+    --glow-success: 152 76% 45%;
+    --shadow-sm: 0 1px 2px hsl(0 0% 0% / 0.2);
+    --shadow-md: 0 4px 12px hsl(0 0% 0% / 0.3);
+    --shadow-lg: 0 8px 30px hsl(0 0% 0% / 0.4);
+    --shadow-xl: 0 16px 50px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 4px 30px hsl(192 100% 50% / 0.25);
+    --shadow-glow-accent: 0 4px 30px hsl(25 95% 53% / 0.25);
   }
 }
 
@@ -100,46 +138,115 @@
     font-feature-settings: "rlig" 1, "calt" 1;
   }
 
-  /* Selection styling */
   ::selection {
-    @apply bg-primary/30 text-foreground;
+    @apply bg-primary/20 text-foreground;
+  }
+
+  /* Typography scale - Revolut inspired */
+  h1, .h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl font-bold tracking-tight;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  h2, .h2 {
+    @apply text-3xl md:text-4xl font-bold tracking-tight;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  h3, .h3 {
+    @apply text-2xl md:text-3xl font-semibold tracking-tight;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  h4, .h4 {
+    @apply text-xl font-semibold tracking-tight;
+    font-family: 'Space Grotesk', sans-serif;
   }
 }
 
 @layer components {
-  /* Glass morphism card */
-  .glass-card {
-    @apply bg-card/80 backdrop-blur-xl border border-border/50 rounded-lg;
-    box-shadow: var(--shadow-card);
+  /* Clean card - Revolut style */
+  .card-clean {
+    @apply bg-card rounded-[1.25rem] border border-border/60;
+    box-shadow: var(--shadow-md);
   }
 
-  /* Glowing border effect */
-  .glow-border {
-    @apply relative;
-    box-shadow: var(--shadow-glow);
+  .card-clean:hover {
+    box-shadow: var(--shadow-lg);
   }
 
-  .glow-border::before {
-    content: '';
-    @apply absolute inset-0 rounded-[inherit] pointer-events-none;
-    background: linear-gradient(135deg, hsl(var(--primary) / 0.2) 0%, transparent 50%);
+  /* Elevated card with subtle shadow */
+  .card-elevated {
+    @apply bg-card rounded-[1.25rem] border-0;
+    box-shadow: var(--shadow-lg);
   }
 
-  /* Glow button states */
-  .btn-glow {
-    @apply relative overflow-hidden transition-all duration-300;
+  /* Interactive card */
+  .card-interactive {
+    @apply bg-card rounded-[1.25rem] border border-border/40 transition-all duration-300 cursor-pointer;
+    box-shadow: var(--shadow-sm);
   }
 
-  .btn-glow:hover {
+  .card-interactive:hover {
+    @apply border-primary/30;
+    box-shadow: var(--shadow-lg);
+    transform: translateY(-2px);
+  }
+
+  /* Pill badge - Revolut style */
+  .pill {
+    @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-medium;
+  }
+
+  .pill-primary {
+    @apply pill bg-primary/10 text-primary;
+  }
+
+  .pill-muted {
+    @apply pill bg-muted text-muted-foreground;
+  }
+
+  .pill-success {
+    @apply pill bg-success/10 text-success;
+  }
+
+  /* Button styles - Clean, modern */
+  .btn-primary {
+    @apply bg-primary text-primary-foreground font-semibold rounded-xl px-6 py-3 transition-all duration-200;
+    box-shadow: var(--shadow-sm);
+  }
+
+  .btn-primary:hover {
+    @apply opacity-90;
     box-shadow: var(--shadow-glow);
     transform: translateY(-1px);
   }
 
-  .btn-glow:active {
+  .btn-primary:active {
     transform: translateY(0);
   }
 
-  /* Accent glow for CEO decisions */
+  .btn-secondary {
+    @apply bg-secondary text-secondary-foreground font-medium rounded-xl px-6 py-3 transition-all duration-200;
+  }
+
+  .btn-secondary:hover {
+    @apply bg-secondary/80;
+  }
+
+  .btn-outline {
+    @apply border-2 border-border bg-transparent text-foreground font-medium rounded-xl px-6 py-3 transition-all duration-200;
+  }
+
+  .btn-outline:hover {
+    @apply border-primary/50 bg-primary/5;
+  }
+
+  /* Glow effects */
+  .glow-primary {
+    box-shadow: var(--shadow-glow);
+  }
+
   .glow-accent {
     box-shadow: var(--shadow-glow-accent);
   }
@@ -155,48 +262,51 @@
     background-image: var(--gradient-accent);
   }
 
-  /* Command center grid pattern */
-  .pattern-grid {
-    background-image: 
-      linear-gradient(hsl(var(--border) / 0.3) 1px, transparent 1px),
-      linear-gradient(90deg, hsl(var(--border) / 0.3) 1px, transparent 1px);
-    background-size: 40px 40px;
+  /* Surface patterns */
+  .surface-subtle {
+    background: var(--gradient-subtle);
   }
 
-  /* Animated pulse for "launching" state */
-  .pulse-glow {
-    animation: pulseGlow 2s ease-in-out infinite;
+  .surface-dots {
+    background-image: radial-gradient(hsl(var(--border)) 1px, transparent 1px);
+    background-size: 20px 20px;
   }
 
-  /* Timeline line */
-  .timeline-line {
-    @apply relative;
+  /* Feature card */
+  .feature-card {
+    @apply relative overflow-hidden rounded-[1.5rem] bg-card p-8;
+    box-shadow: var(--shadow-md);
   }
 
-  .timeline-line::before {
+  .feature-card::before {
     content: '';
-    @apply absolute left-4 top-0 bottom-0 w-px bg-border;
+    @apply absolute inset-0 opacity-0 transition-opacity duration-300;
+    background: var(--gradient-primary);
   }
 
-  /* Evidence trophy animation */
-  .trophy-enter {
-    animation: trophyDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+  .feature-card:hover::before {
+    @apply opacity-5;
   }
 
-  /* Monospace text for technical elements */
-  .font-mono-helm {
-    @apply font-mono tracking-tight;
+  /* Stat display */
+  .stat-value {
+    @apply text-4xl md:text-5xl font-bold tracking-tight;
+    font-family: 'Space Grotesk', sans-serif;
+  }
+
+  .stat-label {
+    @apply text-sm text-muted-foreground uppercase tracking-wider mt-1;
   }
 }
 
 @layer utilities {
-  /* Fade in animation */
+  /* Fade animations */
   .animate-fade-in {
     animation: fadeIn 0.5s ease-out forwards;
   }
 
   .animate-fade-in-up {
-    animation: fadeInUp 0.5s ease-out forwards;
+    animation: fadeInUp 0.6s ease-out forwards;
   }
 
   .animate-slide-in-right {
@@ -207,49 +317,19 @@
     animation: scaleIn 0.3s ease-out forwards;
   }
 
-  /* Hover scale effect */
+  /* Hover effects */
   .hover-lift {
     @apply transition-all duration-300;
   }
-  
+
   .hover-lift:hover {
     transform: translateY(-4px);
-    box-shadow: 0 12px 40px hsl(var(--primary) / 0.15);
-  }
-
-  /* Interactive card hover */
-  .card-interactive {
-    @apply transition-all duration-300 cursor-pointer;
-  }
-
-  .card-interactive:hover {
-    @apply border-primary/40;
-    transform: translateY(-2px);
-    box-shadow: 0 8px 32px hsl(var(--primary) / 0.1);
-  }
-
-  /* Button press effect */
-  .btn-press:active {
-    transform: scale(0.97);
-  }
-
-  /* Underline animation for links */
-  .link-underline {
-    @apply relative;
-  }
-
-  .link-underline::after {
-    content: '';
-    @apply absolute bottom-0 left-0 w-0 h-[1px] bg-primary transition-all duration-300;
-  }
-
-  .link-underline:hover::after {
-    @apply w-full;
+    box-shadow: var(--shadow-lg);
   }
 
   /* Focus ring */
   .focus-ring {
-    @apply focus:outline-none focus:ring-2 focus:ring-primary/50 focus:ring-offset-2 focus:ring-offset-background;
+    @apply focus:outline-none focus:ring-2 focus:ring-primary/40 focus:ring-offset-2 focus:ring-offset-background;
   }
 
   /* Stagger delays */
@@ -258,10 +338,22 @@
   .delay-300 { animation-delay: 300ms; }
   .delay-400 { animation-delay: 400ms; }
   .delay-500 { animation-delay: 500ms; }
-  .delay-600 { animation-delay: 600ms; }
-  .delay-700 { animation-delay: 700ms; }
 
-  /* Gradient text shimmer */
+  /* Smooth underline */
+  .link-underline {
+    @apply relative;
+  }
+
+  .link-underline::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-[2px] bg-primary transition-all duration-300 rounded-full;
+  }
+
+  .link-underline:hover::after {
+    @apply w-full;
+  }
+
+  /* Text shimmer */
   .text-shimmer {
     background: linear-gradient(
       90deg,
@@ -286,7 +378,7 @@
 @keyframes fadeInUp {
   from {
     opacity: 0;
-    transform: translateY(20px);
+    transform: translateY(24px);
   }
   to {
     opacity: 1;
@@ -308,34 +400,11 @@
 @keyframes scaleIn {
   from {
     opacity: 0;
-    transform: scale(0.9);
+    transform: scale(0.95);
   }
   to {
     opacity: 1;
     transform: scale(1);
-  }
-}
-
-@keyframes pulseGlow {
-  0%, 100% {
-    box-shadow: 0 0 20px hsl(var(--primary) / 0.4);
-  }
-  50% {
-    box-shadow: 0 0 40px hsl(var(--primary) / 0.6), 0 0 60px hsl(var(--primary) / 0.3);
-  }
-}
-
-@keyframes trophyDrop {
-  0% {
-    opacity: 0;
-    transform: translateY(-30px) scale(0.8);
-  }
-  60% {
-    transform: translateY(5px) scale(1.05);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1);
   }
 }
 
@@ -348,7 +417,6 @@
   }
 }
 
-/* Floating animation */
 @keyframes float {
   0%, 100% {
     transform: translateY(0);
@@ -362,6 +430,20 @@
   animation: float 4s ease-in-out infinite;
 }
 
+@keyframes pulseGlow {
+  0%, 100% {
+    box-shadow: 0 0 15px hsl(var(--primary) / 0.3);
+  }
+  50% {
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.5);
+  }
+}
+
+.pulse-glow {
+  animation: pulseGlow 2s ease-in-out infinite;
+}
+
+/* Decision animations */
 @keyframes decisionConfirm {
   0% {
     transform: scale(1);
@@ -377,54 +459,14 @@
   }
 }
 
-@keyframes decisionPulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.7;
-  }
-}
-
-/* Fog of war effect */
-@keyframes fogReveal {
-  from {
-    opacity: 0.3;
-    filter: blur(2px);
-  }
-  to {
-    opacity: 1;
-    filter: blur(0);
-  }
-}
-
-/* Quest checkmark animation */
-@keyframes checkComplete {
-  0% {
-    transform: scale(0) rotate(-45deg);
-  }
-  50% {
-    transform: scale(1.2) rotate(0deg);
-  }
-  100% {
-    transform: scale(1) rotate(0deg);
-  }
-}
-
-/* Boss encounter overlay */
-@keyframes bossOverlay {
-  from {
-    background-color: hsl(0 0% 0% / 0);
-  }
-  to {
-    background-color: hsl(0 0% 0% / 0.7);
-  }
-}
-
-@keyframes bossCardEnter {
+/* Trophy animation */
+@keyframes trophyDrop {
   0% {
     opacity: 0;
-    transform: translateY(30px) scale(0.9);
+    transform: translateY(-30px) scale(0.8);
+  }
+  60% {
+    transform: translateY(5px) scale(1.05);
   }
   100% {
     opacity: 1;
@@ -432,279 +474,6 @@
   }
 }
 
-/* Progress bar shimmer */
-@keyframes progressShimmer {
-  0% {
-    background-position: -200% center;
-  }
-  100% {
-    background-position: 200% center;
-  }
-}
-
-/* Timeline scanning effect */
-@keyframes timelineScan {
-  0% {
-    left: 0;
-    opacity: 0;
-  }
-  10% {
-    opacity: 1;
-  }
-  90% {
-    opacity: 1;
-  }
-  100% {
-    left: 100%;
-    opacity: 0;
-  }
-}
-
-/* Event marker pulse */
-@keyframes eventPulse {
-  0%, 100% {
-    transform: translate(-50%, -50%) scale(1);
-    box-shadow: 0 0 0 0 hsl(var(--primary) / 0.4);
-  }
-  50% {
-    transform: translate(-50%, -50%) scale(1.2);
-    box-shadow: 0 0 0 8px hsl(var(--primary) / 0);
-  }
-}
-
-/* Trophy celebration */
-@keyframes trophyCelebrate {
-  0% {
-    opacity: 0;
-    transform: translateY(-20px) scale(0.5) rotate(-10deg);
-  }
-  50% {
-    transform: translateY(5px) scale(1.1) rotate(5deg);
-  }
-  70% {
-    transform: translateY(-3px) scale(1.05) rotate(-2deg);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0) scale(1) rotate(0deg);
-  }
-}
-
-/* Sparkle effect */
-@keyframes sparkle {
-  0%, 100% {
-    opacity: 0;
-    transform: scale(0) rotate(0deg);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1) rotate(180deg);
-  }
-}
-
-/* Boss attention pulse */
-@keyframes bossPulse {
-  0%, 100% {
-    box-shadow: 0 0 0 0 hsl(var(--accent) / 0.4), 0 0 30px hsl(var(--accent) / 0.2);
-  }
-  50% {
-    box-shadow: 0 0 0 15px hsl(var(--accent) / 0), 0 0 60px hsl(var(--accent) / 0.4);
-  }
-}
-
-/* Countdown animation */
-@keyframes countdownPulse {
-  0% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.1);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-
-/* Day complete celebration */
-@keyframes dayComplete {
-  0% {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  50% {
-    transform: scale(1.05);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Confetti effect */
-@keyframes confetti {
-  0% {
-    transform: translateY(0) rotate(0deg);
-    opacity: 1;
-  }
-  100% {
-    transform: translateY(-100px) rotate(720deg);
-    opacity: 0;
-  }
-}
-
-@layer components {
-  /* Quest log styling */
-  .quest-item {
-    @apply relative pl-8 py-2 border-l-2 border-border/50 transition-all duration-300;
-  }
-
-  .quest-item.completed {
-    @apply border-l-success/50;
-  }
-
-  .quest-item.active {
-    @apply border-l-primary bg-primary/5;
-  }
-
-  .quest-check {
-    animation: checkComplete 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  /* Fog of war */
-  .fog-hidden {
-    @apply opacity-30 blur-[1px] transition-all duration-300;
-  }
-
-  .fog-visible {
-    animation: fogReveal 0.3s ease-out forwards;
-  }
-
-  /* Decision confirm */
-  .decision-confirm {
-    animation: decisionConfirm 0.5s ease-out forwards;
-  }
-
-  /* Boss encounter */
-  .boss-overlay {
-    animation: bossOverlay 0.3s ease-out forwards;
-    background-color: hsl(0 0% 0% / 0.7);
-  }
-
-  .boss-card-enter {
-    animation: bossCardEnter 0.4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  .boss-pulse {
-    animation: bossPulse 2s ease-in-out infinite;
-  }
-
-  /* HUD panel */
-  .hud-panel {
-    @apply glass-card p-3 relative overflow-hidden;
-  }
-
-  .hud-panel::before {
-    content: '';
-    @apply absolute top-0 left-0 right-0 h-px;
-    background: linear-gradient(90deg, transparent, hsl(var(--primary) / 0.5), transparent);
-  }
-
-  /* Mini-map */
-  .minimap {
-    @apply relative rounded-lg overflow-hidden;
-    background: radial-gradient(ellipse at center, hsl(var(--card)) 0%, hsl(var(--background)) 100%);
-  }
-
-  .minimap-node {
-    @apply absolute w-3 h-3 rounded-full transition-all duration-300 cursor-pointer;
-  }
-
-  .minimap-node:hover {
-    transform: scale(1.3);
-    box-shadow: 0 0 12px currentColor;
-  }
-
-  .minimap-node.active {
-    animation: decisionPulse 1.5s ease-in-out infinite;
-  }
-
-  /* Progress shimmer */
-  .progress-shimmer {
-    background: linear-gradient(
-      90deg,
-      transparent 0%,
-      hsl(var(--primary) / 0.3) 50%,
-      transparent 100%
-    );
-    background-size: 200% 100%;
-    animation: progressShimmer 2s linear infinite;
-  }
-
-  /* Timeline scanner */
-  .timeline-scanner {
-    @apply absolute top-0 bottom-0 w-0.5 bg-primary pointer-events-none;
-    box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary) / 0.5);
-  }
-
-  /* Event pulse */
-  .event-pulse {
-    animation: eventPulse 1.5s ease-in-out infinite;
-  }
-
-  /* CEO attention indicator */
-  .ceo-attention {
-    @apply relative;
-  }
-
-  .ceo-attention::after {
-    content: '';
-    @apply absolute -top-1 -right-1 w-3 h-3 rounded-full bg-accent;
-    animation: decisionPulse 1.5s ease-in-out infinite;
-  }
-
-  /* Trophy celebration */
-  .trophy-celebrate {
-    animation: trophyCelebrate 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
-  }
-
-  /* Day complete panel */
-  .day-complete {
-    animation: dayComplete 0.5s ease-out forwards;
-  }
-
-  /* Sparkle decoration */
-  .sparkle {
-    @apply absolute w-3 h-3 text-accent;
-    animation: sparkle 1.5s ease-in-out infinite;
-  }
-
-  /* Countdown display */
-  .countdown-pulse {
-    animation: countdownPulse 1s ease-in-out infinite;
-  }
-
-  /* Boss attention overlay */
-  .boss-attention-ring {
-    @apply absolute inset-0 rounded-lg pointer-events-none;
-    box-shadow: inset 0 0 30px hsl(var(--accent) / 0.3);
-    animation: bossPulse 1.5s ease-in-out infinite;
-  }
-}
-
-/* Scrollbar styling */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-
-::-webkit-scrollbar-track {
-  @apply bg-background;
-}
-
-::-webkit-scrollbar-thumb {
-  @apply bg-muted rounded-full;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  @apply bg-muted-foreground/50;
+.trophy-enter {
+  animation: trophyDrop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
 }
