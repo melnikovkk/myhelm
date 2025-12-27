@@ -10,7 +10,7 @@ import { DemoProvider } from '@/contexts/DemoContext';
 const Index = () => {
   return (
     <DemoProvider>
-      <div className="min-h-screen bg-background pattern-grid">
+      <div className="min-h-screen bg-background">
         <Navbar />
         <main>
           <Hero />
