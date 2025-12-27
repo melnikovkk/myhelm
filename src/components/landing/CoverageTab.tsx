@@ -1,11 +1,12 @@
-import { forwardRef, useState } from 'react';
+import { forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useDemo } from '@/contexts/DemoContext';
 import { TranslationKey } from '@/lib/translations';
 import { 
   Megaphone, Users, Truck, ShoppingCart, 
   Wallet, BarChart3, Scale, Shield,
   UserCheck, Package, HeadphonesIcon, Lock,
-  CheckCircle, Brain, FileCheck, ChevronDown, ChevronUp
+  CheckCircle, Brain, FileCheck, Zap, Activity
 } from 'lucide-react';
 import {
   Accordion,
@@ -13,6 +14,7 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+import { getActiveDomains } from './DomainActivityIndicator';
 
 // 12 Business Domains with L2 subdomains
 const DOMAINS = [
@@ -164,14 +166,27 @@ const DOMAINS = [
 
 const CoverageTab = forwardRef<HTMLDivElement>((_, ref) => {
   const { t, language } = useLanguage();
+  const { state, isReplay, isDayComplete } = useDemo();
+  
+  // Get domains that were triggered during test day
+  const triggeredDomains = getActiveDomains(state.timeline.currentEventIndex);
+  const isTestDayComplete = isDayComplete || isReplay;
 
   return (
     <div ref={ref} className="space-y-4">
-      {/* Header */}
+      {/* Header with live indicator */}
       <div className="text-center mb-6">
-        <h3 className="text-lg font-semibold text-foreground mb-2">
-          {t('coverage.title')}
-        </h3>
+        <div className="flex items-center justify-center gap-2 mb-2">
+          <h3 className="text-lg font-semibold text-foreground">
+            {t('coverage.title')}
+          </h3>
+          {isTestDayComplete && triggeredDomains.length > 0 && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 text-xs bg-success/10 text-success rounded-full animate-fade-in">
+              <Activity className="w-3 h-3" />
+              {triggeredDomains.length} {language === 'ru' ? 'активны' : 'active'}
+            </span>
+          )}
+        </div>
         <p className="text-xs text-muted-foreground max-w-md mx-auto">
           {t('coverage.subtitle')}
         </p>
@@ -179,39 +194,68 @@ const CoverageTab = forwardRef<HTMLDivElement>((_, ref) => {
 
       {/* Domain Accordion */}
       <Accordion type="single" collapsible className="space-y-2">
-        {DOMAINS.map(({ key, icon: Icon, l2, l2Ru, runs, runsRu, decides, decidesRu, proof, proofRu }) => (
-          <AccordionItem
-            key={key}
-            value={key}
-            className="glass-card border-border/50 rounded-lg overflow-hidden data-[state=open]:border-primary/30"
-          >
-            <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-primary/5 transition-colors">
-              <div className="flex items-center gap-3 w-full">
-                <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Icon className="w-4 h-4 text-primary" />
-                </div>
-                <div className="flex-1 text-left">
-                  <span className="font-medium text-foreground text-sm">
-                    {t(`coverage.domain.${key}` as TranslationKey)}
-                  </span>
-                  <div className="flex items-center gap-2 mt-0.5">
-                    <span className="flex items-center gap-0.5 text-[10px] text-success">
-                      <CheckCircle className="w-2.5 h-2.5" />
-                      {runs.length}
-                    </span>
-                    <span className="flex items-center gap-0.5 text-[10px] text-accent">
-                      <Brain className="w-2.5 h-2.5" />
-                      1
-                    </span>
-                    <span className="flex items-center gap-0.5 text-[10px] text-primary">
-                      <FileCheck className="w-2.5 h-2.5" />
-                      {proof.length}
-                    </span>
+        {DOMAINS.map(({ key, icon: Icon, l2, l2Ru, runs, runsRu, decides, decidesRu, proof, proofRu }) => {
+          const wasTriggered = triggeredDomains.includes(key);
+          
+          return (
+            <AccordionItem
+              key={key}
+              value={key}
+              className={`glass-card border-border/50 rounded-lg overflow-hidden transition-all duration-300 ${
+                wasTriggered 
+                  ? 'border-success/30 bg-success/5' 
+                  : 'data-[state=open]:border-primary/30'
+              }`}
+            >
+              <AccordionTrigger className="px-4 py-3 hover:no-underline hover:bg-primary/5 transition-colors">
+                <div className="flex items-center gap-3 w-full">
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 transition-all ${
+                    wasTriggered ? 'bg-success/20' : 'bg-primary/10'
+                  }`}>
+                    <Icon className={`w-4 h-4 ${wasTriggered ? 'text-success' : 'text-primary'}`} />
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="flex items-center gap-2">
+                      <span className="font-medium text-foreground text-sm">
+                        {t(`coverage.domain.${key}` as TranslationKey)}
+                      </span>
+                      {wasTriggered && (
+                        <span className="flex items-center gap-0.5 px-1.5 py-0.5 bg-success/10 text-success text-[10px] rounded-full animate-fade-in">
+                          <Zap className="w-2.5 h-2.5" />
+                          {language === 'ru' ? 'Активен' : 'Active'}
+                        </span>
+                      )}
+                    </div>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span className="flex items-center gap-0.5 text-[10px] text-success">
+                        <CheckCircle className="w-2.5 h-2.5" />
+                        {runs.length}
+                      </span>
+                      <span className="flex items-center gap-0.5 text-[10px] text-accent">
+                        <Brain className="w-2.5 h-2.5" />
+                        1
+                      </span>
+                      <span className="flex items-center gap-0.5 text-[10px] text-primary">
+                        <FileCheck className="w-2.5 h-2.5" />
+                        {proof.length}
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </AccordionTrigger>
-            <AccordionContent className="px-4 pb-4">
+              </AccordionTrigger>
+              <AccordionContent className="px-4 pb-4">
+                {/* Triggered indicator */}
+                {wasTriggered && (
+                  <div className="mb-4 p-2 bg-success/10 border border-success/20 rounded-lg flex items-center gap-2 animate-fade-in">
+                    <Zap className="w-4 h-4 text-success" />
+                    <span className="text-xs text-success">
+                      {language === 'ru' 
+                        ? 'Этот домен был активирован во время тестового дня' 
+                        : 'This domain was triggered during the test day'
+                      }
+                    </span>
+                  </div>
+                )}
               {/* L2 Subdomains */}
               <div className="mb-4">
                 <span className="text-xs text-muted-foreground mb-2 block">
@@ -266,9 +310,10 @@ const CoverageTab = forwardRef<HTMLDivElement>((_, ref) => {
                   ))}
                 </div>
               </div>
-            </AccordionContent>
-          </AccordionItem>
-        ))}
+              </AccordionContent>
+            </AccordionItem>
+          );
+        })}
       </Accordion>
 
       {/* Legend */}

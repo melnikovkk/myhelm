@@ -1,6 +1,5 @@
 import { useLanguage } from '@/hooks/useLanguage';
 import { useDemo } from '@/contexts/DemoContext';
-import { TranslationKey } from '@/lib/translations';
 import { 
   FileText, 
   Settings, 
@@ -13,19 +12,9 @@ import {
   Target,
   Sparkles
 } from 'lucide-react';
-import { Slider } from '@/components/ui/slider';
 import RunHUD from './RunHUD';
-
-const TIMELINE_EVENTS = [
-  { time: '09:00', key: 'timeline.09:00' as TranslationKey, progress: 0 },
-  { time: '10:00', key: 'timeline.10:00' as TranslationKey, progress: 12.5 },
-  { time: '12:00', key: 'timeline.12:00' as TranslationKey, progress: 37.5 },
-  { time: '14:00', key: 'timeline.14:00' as TranslationKey, progress: 62.5 },
-  { time: '15:00', key: 'timeline.15:00' as TranslationKey, progress: 75 },
-  { time: '15:30', key: 'timeline.15:30' as TranslationKey, progress: 81.25, isBossDecision: true },
-  { time: '16:00', key: 'timeline.16:00' as TranslationKey, progress: 87.5 },
-  { time: '17:00', key: 'timeline.17:00' as TranslationKey, progress: 100 },
-];
+import ReplayControls from './ReplayControls';
+import ConfettiCelebration from './ConfettiCelebration';
 
 const BusinessTab = () => {
   const { t, language } = useLanguage();
@@ -36,12 +25,17 @@ const BusinessTab = () => {
 
   const showTimeline = ['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE', 'REPLAY'].includes(state.uiState);
   const week1Items = data.week1Goals || data.week1 || [];
+  
+  // Trigger confetti when all evidence is revealed
+  const showConfetti = isDayComplete && state.timeline.evidenceRevealed.length === 3;
 
   return (
     <div className="space-y-4">
+      {/* Confetti celebration */}
+      <ConfettiCelebration trigger={showConfetti} />
+      
       {/* Run HUD */}
       {showTimeline && <RunHUD />}
-
       {/* Main Content Grid */}
       <div className="grid md:grid-cols-2 gap-4">
         {/* Left Column: Products & Target */}
@@ -168,20 +162,8 @@ const BusinessTab = () => {
         )}
       </div>
 
-      {/* Timeline Scrubber */}
-      {isReplay && (
-        <div className="glass-card p-4 rounded-xl">
-          <div className="flex items-center justify-between mb-3">
-            <span className="text-sm font-medium text-foreground">{language === 'ru' ? 'Воспроизведение дня' : 'Day Replay'}</span>
-            <span className="text-xs text-muted-foreground font-mono">{Math.round(state.timeline.progress)}%</span>
-          </div>
-          <Slider value={[state.timeline.progress]} onValueChange={([v]) => actions.scrubReplay(v)} max={100} step={1} className="cursor-pointer" />
-          <div className="flex justify-between mt-2">
-            <span className="text-[10px] text-muted-foreground">09:00</span>
-            <span className="text-[10px] text-muted-foreground">17:00</span>
-          </div>
-        </div>
-      )}
+      {/* Enhanced Replay Controls */}
+      {isReplay && <ReplayControls />}
     </div>
   );
 };
