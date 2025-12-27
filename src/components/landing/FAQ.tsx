@@ -27,26 +27,25 @@ const FAQ = forwardRef<HTMLElement>((_, ref) => {
   const { t } = useLanguage();
 
   return (
-    <section ref={ref} className="py-20 md:py-28 border-t border-border">
-      <div className="container mx-auto px-6 lg:px-8">
-        <div className="text-center mb-12 md:mb-14">
-          <h2 className="text-2xl md:text-3xl font-semibold text-foreground">
-            {t('faq.title')}
-          </h2>
-        </div>
+    <section ref={ref} className="py-20 md:py-32">
+      <div className="container mx-auto px-4">
+        <h2 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
+          {t('faq.title')}
+        </h2>
+        <div className="w-20 h-1 bg-primary mx-auto mb-12 rounded-full" />
 
         <div className="max-w-2xl mx-auto">
-          <Accordion type="single" collapsible className="space-y-2">
+          <Accordion type="single" collapsible className="space-y-3">
             {FAQ_ITEMS.map(({ q, a }, i) => (
               <AccordionItem
                 key={i}
                 value={`item-${i}`}
-                className="bg-card border border-border rounded-xl px-5 data-[state=open]:border-foreground/20"
+                className="glass-card border-border/50 rounded-lg px-6 data-[state=open]:border-primary/30"
               >
-                <AccordionTrigger className="text-left text-foreground hover:text-foreground py-4 hover:no-underline text-sm md:text-base">
+                <AccordionTrigger className="text-left text-foreground hover:text-primary py-4 hover:no-underline">
                   {t(q as TranslationKey)}
                 </AccordionTrigger>
-                <AccordionContent className="text-muted-foreground pb-4 text-sm leading-relaxed">
+                <AccordionContent className="text-muted-foreground pb-4">
                   {t(a as TranslationKey)}
                 </AccordionContent>
               </AccordionItem>

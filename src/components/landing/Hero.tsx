@@ -40,57 +40,57 @@ const Hero = () => {
     <section className="relative min-h-screen bg-background">
       {/* Hero Content - Pre-simulator state */}
       {!showSimulator && (
-        <div className="relative pt-20 md:pt-28 min-h-screen">
-          <div className="container mx-auto px-6 lg:px-8">
-            <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center max-w-7xl mx-auto">
+        <div className="relative pt-24 pb-16 md:pt-32 md:pb-24 min-h-screen">
+          <div className="container mx-auto px-4">
+            <div className="grid lg:grid-cols-2 gap-16 items-center">
               {/* Left: Content */}
-              <div className="text-center lg:text-left space-y-6">
+              <div className="text-center lg:text-left">
                 {/* Badge */}
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-secondary text-foreground text-xs font-medium">
-                  {language === 'ru' ? 'Бизнес-автопилот на ИИ' : 'AI Business Autopilot'}
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-xs font-medium mb-6 border border-primary/10">
+                  <span>{language === 'ru' ? 'Бизнес-автопилот на ИИ' : 'AI Business Autopilot'}</span>
                 </div>
                 
                 {/* Headline */}
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-[3.5rem] font-semibold text-foreground leading-[1.1] tracking-tight">
+                <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-foreground mb-6 leading-[1.1] tracking-tight">
                   {t('hero.headline')}
                 </h1>
                 
                 {/* Subheadline */}
-                <p className="text-base md:text-lg text-muted-foreground max-w-lg mx-auto lg:mx-0 leading-relaxed">
+                <p className="text-lg text-muted-foreground max-w-md mx-auto lg:mx-0 leading-relaxed mb-10">
                   {t('hero.subheadline')}
                 </p>
 
                 {/* Stats row */}
-                <div className="flex flex-wrap justify-center lg:justify-start gap-6 pt-4">
-                  <div className="text-center lg:text-left">
-                    <div className="text-2xl md:text-3xl font-semibold text-foreground">12</div>
-                    <div className="text-xs md:text-sm text-muted-foreground mt-0.5">{language === 'ru' ? 'Доменов' : 'Domains'}</div>
+                <div className="flex flex-wrap justify-center lg:justify-start gap-8">
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">12</div>
+                    <div className="text-sm text-muted-foreground">{language === 'ru' ? 'Доменов' : 'Domains'}</div>
                   </div>
-                  <div className="w-px bg-border self-stretch" />
-                  <div className="text-center lg:text-left">
-                    <div className="text-2xl md:text-3xl font-semibold text-foreground">100%</div>
-                    <div className="text-xs md:text-sm text-muted-foreground mt-0.5">{language === 'ru' ? 'Прозрачность' : 'Transparent'}</div>
+                  <div className="w-px bg-border" />
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">100%</div>
+                    <div className="text-sm text-muted-foreground">{language === 'ru' ? 'Прозрачность' : 'Transparent'}</div>
                   </div>
-                  <div className="w-px bg-border self-stretch" />
-                  <div className="text-center lg:text-left">
-                    <div className="text-2xl md:text-3xl font-semibold text-foreground">24/7</div>
-                    <div className="text-xs md:text-sm text-muted-foreground mt-0.5">{language === 'ru' ? 'Автопилот' : 'Autopilot'}</div>
+                  <div className="w-px bg-border" />
+                  <div>
+                    <div className="text-3xl font-bold text-foreground">24/7</div>
+                    <div className="text-sm text-muted-foreground">{language === 'ru' ? 'Автопилот' : 'Autopilot'}</div>
                   </div>
                 </div>
               </div>
 
               {/* Right: Dashboard Preview */}
-              <div className="hidden lg:block">
+              <div className="relative hidden lg:block">
                 <img 
                   src={dashboardPreview} 
                   alt="HELM Dashboard" 
-                  className="w-full h-auto rounded-xl shadow-sm border border-border"
+                  className="w-full h-auto rounded-2xl"
                 />
               </div>
             </div>
 
             {/* Demo Card */}
-            <div className="max-w-lg mx-auto lg:mx-0 mt-10 lg:mt-12">
+            <div className="max-w-lg mx-auto mt-16">
               {(showWizard || state.prompt) && (
                 <div className="bg-card border border-border rounded-2xl p-6 md:p-8 shadow-sm">
                   {/* Wizard Mode */}
@@ -206,8 +206,8 @@ const Hero = () => {
 
       {/* Simulator */}
       {showSimulator && (
-        <div className="relative pt-16 md:pt-20 pb-12 md:pb-16">
-          <div className="container mx-auto px-4 md:px-6 lg:px-8 max-w-7xl">
+        <div className="relative pt-20 pb-16">
+          <div className="container mx-auto px-4 max-w-7xl">
             <BusinessSimulator />
           </div>
         </div>

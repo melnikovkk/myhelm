@@ -27,13 +27,13 @@ const Navbar = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/90 backdrop-blur-md border-b border-border">
-      <nav className="container mx-auto px-6 lg:px-8 h-14 flex items-center justify-between max-w-7xl">
-        <Link to="/" className="flex items-center gap-2.5">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
+      <nav className="container mx-auto px-4 h-14 flex items-center justify-between">
+        <Link to="/" className="flex items-center gap-2">
           <div className="w-7 h-7 rounded-lg bg-foreground flex items-center justify-center">
             <span className="font-semibold text-background text-sm">H</span>
           </div>
-          <span className="font-semibold text-foreground text-sm">
+          <span className="font-semibold text-foreground">
             {t('nav.logo')}
           </span>
         </Link>
@@ -44,7 +44,7 @@ const Navbar = () => {
               variant="ghost"
               size="icon"
               onClick={toggleTheme}
-              className="w-9 h-9 text-muted-foreground hover:text-foreground"
+              className="w-8 h-8 text-muted-foreground hover:text-foreground"
             >
               {theme === 'dark' ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </Button>
@@ -54,7 +54,7 @@ const Navbar = () => {
             variant="ghost"
             size="sm"
             onClick={toggleLanguage}
-            className="gap-1.5 text-muted-foreground hover:text-foreground text-xs h-9 px-3"
+            className="gap-1.5 text-muted-foreground hover:text-foreground text-xs"
           >
             <Globe className="w-3.5 h-3.5" />
             {language === 'en' ? 'RU' : 'EN'}
@@ -62,7 +62,7 @@ const Navbar = () => {
 
           <Button 
             size="sm" 
-            className="ml-1 h-9 text-xs font-medium px-4"
+            className="ml-2 h-8 text-xs font-medium"
             onClick={() => {
               document.getElementById('waitlist')?.scrollIntoView({ behavior: 'smooth' });
             }}

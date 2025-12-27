@@ -71,12 +71,12 @@ const WaitlistForm = forwardRef<HTMLElement>((_, ref) => {
   };
 
   return (
-    <section ref={ref} id="waitlist" className="py-20 md:py-28 border-t border-border">
-      <div className="container mx-auto px-6 lg:px-8">
+    <section ref={ref} id="waitlist" className="py-16 md:py-24">
+      <div className="container mx-auto px-4">
         <div className="max-w-md mx-auto">
           <div className="bg-card border border-border rounded-2xl p-6 md:p-8">
-            <div className="text-center mb-6">
-              <h2 className="text-xl md:text-2xl font-semibold text-foreground">
+            <div className="text-center mb-8">
+              <h2 className="text-xl md:text-2xl font-semibold text-foreground mb-2">
                 {t('waitlist.title')}
               </h2>
             </div>
@@ -85,17 +85,17 @@ const WaitlistForm = forwardRef<HTMLElement>((_, ref) => {
               <RadioGroup
                 value={mode}
                 onValueChange={(v) => setMode(v as 'new' | 'digitize')}
-                className="flex gap-6"
+                className="flex gap-4"
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="new" id="mode-new" />
-                  <Label htmlFor="mode-new" className="text-sm cursor-pointer text-foreground">
+                  <Label htmlFor="mode-new" className="text-sm cursor-pointer">
                     {t('waitlist.mode.new')}
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="digitize" id="mode-digitize" />
-                  <Label htmlFor="mode-digitize" className="text-sm cursor-pointer text-foreground">
+                  <Label htmlFor="mode-digitize" className="text-sm cursor-pointer">
                     {t('waitlist.mode.digitize')}
                   </Label>
                 </div>
@@ -106,7 +106,7 @@ const WaitlistForm = forwardRef<HTMLElement>((_, ref) => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={t('waitlist.email.placeholder')}
-                className="h-11"
+                className="h-10"
                 required
               />
 
@@ -114,13 +114,13 @@ const WaitlistForm = forwardRef<HTMLElement>((_, ref) => {
                 value={prompt}
                 onChange={(e) => setPrompt(e.target.value)}
                 placeholder={t('waitlist.prompt.placeholder')}
-                className="min-h-[88px] resize-none text-sm"
+                className="min-h-[80px] resize-none"
               />
 
               <Button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full h-11 font-medium"
+                className="w-full h-10"
               >
                 {isSubmitting ? (
                   <>
