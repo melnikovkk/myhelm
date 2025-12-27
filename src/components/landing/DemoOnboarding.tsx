@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, forwardRef } from 'react';
 import { useLanguage } from '@/hooks/useLanguage';
-import { X, Sparkles, Rocket, Target, Zap } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { Sparkles, Rocket, Target, Zap, X } from 'lucide-react';
 
 interface DemoOnboardingProps {
   onDismiss: () => void;
@@ -10,101 +9,93 @@ interface DemoOnboardingProps {
 const TIPS = [
   { 
     icon: Rocket, 
-    keyEn: 'Pick a region & industry, then launch a business', 
-    keyRu: 'Выберите регион и отрасль, затем запустите бизнес' 
+    keyEn: 'Pick region & industry', 
+    keyRu: 'Выберите регион и отрасль' 
   },
   { 
     icon: Zap, 
-    keyEn: 'Watch AI build your operating system in seconds', 
-    keyRu: 'Смотрите, как AI создаёт вашу операционную систему за секунды' 
+    keyEn: 'AI builds your OS', 
+    keyRu: 'AI создаёт систему' 
   },
   { 
     icon: Target, 
-    keyEn: 'Run a test day and make CEO decisions', 
-    keyRu: 'Запустите тестовый день и примите CEO решения' 
+    keyEn: 'Run test day as CEO', 
+    keyRu: 'Тестовый день CEO' 
   },
 ];
 
-const DemoOnboarding = ({ onDismiss }: DemoOnboardingProps) => {
+const DemoOnboarding = forwardRef<HTMLDivElement, DemoOnboardingProps>(({ onDismiss }, ref) => {
   const { language } = useLanguage();
   const [isVisible, setIsVisible] = useState(false);
-  const [currentTip, setCurrentTip] = useState(0);
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), 500);
+    const timer = setTimeout(() => setIsVisible(true), 300);
     return () => clearTimeout(timer);
   }, []);
 
+  // Auto-dismiss after 6 seconds
   useEffect(() => {
-    if (currentTip < TIPS.length - 1) {
-      const timer = setTimeout(() => setCurrentTip(prev => prev + 1), 2000);
-      return () => clearTimeout(timer);
-    }
-  }, [currentTip]);
+    const timer = setTimeout(() => {
+      handleDismiss();
+    }, 6000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleDismiss = () => {
     setIsVisible(false);
-    setTimeout(onDismiss, 300);
+    setTimeout(onDismiss, 200);
   };
 
   if (!isVisible) return null;
 
   return (
-    <div className="absolute inset-x-0 -top-2 transform -translate-y-full z-20 animate-fade-in-up">
-      <div className="glass-card p-4 rounded-xl border-primary/30 relative overflow-hidden">
-        {/* Glow effect */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-1 bg-gradient-to-r from-transparent via-primary to-transparent" />
-        
+    <div 
+      ref={ref}
+      className="mb-4 animate-fade-in"
+    >
+      <div 
+        className="relative p-3 rounded-xl bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20 cursor-pointer hover:border-primary/40 transition-all"
+        onClick={handleDismiss}
+      >
+        {/* Close button */}
         <button 
-          onClick={handleDismiss}
           className="absolute top-2 right-2 p-1 text-muted-foreground hover:text-foreground transition-colors"
+          onClick={(e) => { e.stopPropagation(); handleDismiss(); }}
         >
-          <X className="w-4 h-4" />
+          <X className="w-3.5 h-3.5" />
         </button>
 
-        <div className="flex items-center gap-2 mb-3">
-          <Sparkles className="w-4 h-4 text-primary animate-pulse" />
-          <span className="text-sm font-medium text-foreground">
+        <div className="flex items-center gap-2 mb-2">
+          <Sparkles className="w-3.5 h-3.5 text-primary animate-pulse" />
+          <span className="text-xs font-medium text-foreground">
             {language === 'ru' ? 'Как это работает' : 'How it works'}
           </span>
         </div>
 
-        <div className="space-y-2">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4">
           {TIPS.map((tip, i) => {
             const Icon = tip.icon;
-            const isActive = i <= currentTip;
             return (
               <div 
                 key={i} 
-                className={`flex items-center gap-3 transition-all duration-500 ${
-                  isActive ? 'opacity-100 translate-x-0' : 'opacity-30 translate-x-2'
-                }`}
+                className="flex items-center gap-1.5 opacity-0 animate-fade-in"
+                style={{ animationDelay: `${i * 200}ms`, animationFillMode: 'forwards' }}
               >
-                <div className={`w-6 h-6 rounded-full flex items-center justify-center transition-colors ${
-                  isActive ? 'bg-primary/20 text-primary' : 'bg-secondary text-muted-foreground'
-                }`}>
-                  <Icon className="w-3 h-3" />
+                <div className="w-5 h-5 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Icon className="w-2.5 h-2.5 text-primary" />
                 </div>
-                <span className={`text-xs ${isActive ? 'text-foreground' : 'text-muted-foreground'}`}>
+                <span className="text-xs text-foreground">
                   {language === 'ru' ? tip.keyRu : tip.keyEn}
                 </span>
               </div>
             );
           })}
         </div>
-
-        {currentTip >= TIPS.length - 1 && (
-          <Button 
-            onClick={handleDismiss} 
-            size="sm" 
-            className="w-full mt-3 bg-primary/10 text-primary hover:bg-primary/20"
-          >
-            {language === 'ru' ? 'Понятно!' : 'Got it!'}
-          </Button>
-        )}
       </div>
     </div>
   );
-};
+});
+
+DemoOnboarding.displayName = 'DemoOnboarding';
 
 export default DemoOnboarding;

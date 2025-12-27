@@ -123,7 +123,7 @@ const PromptGenerator = ({ onUseCanon }: PromptGeneratorProps) => {
 
   return (
     <div className="space-y-6 relative">
-      {/* Onboarding for first-time users */}
+      {/* Onboarding hint banner - repositioned to not block CTAs */}
       {showOnboarding && (
         <DemoOnboarding onDismiss={handleDismissOnboarding} />
       )}
