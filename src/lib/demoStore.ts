@@ -506,6 +506,18 @@ export function loadSession(): Partial<DemoSession> | null {
     
     const parsed = JSON.parse(stored);
     
+    // Validate parsed data has required structure
+    if (typeof parsed !== 'object' || parsed === null) {
+      clearPersistedSession();
+      return null;
+    }
+    
+    // Validate critical fields to prevent "Component is not a function" errors
+    if (parsed.uiState && typeof parsed.uiState !== 'string') {
+      clearPersistedSession();
+      return null;
+    }
+    
     // If was in a running state, pause it
     if (['RUNNING', 'DECISION', 'DECIDED', 'EVIDENCE'].includes(parsed.uiState)) {
       parsed.uiState = 'ARTIFACTS';
@@ -516,6 +528,8 @@ export function loadSession(): Partial<DemoSession> | null {
     
     return parsed;
   } catch {
+    // Clear corrupted session data
+    clearPersistedSession();
     return null;
   }
 }
